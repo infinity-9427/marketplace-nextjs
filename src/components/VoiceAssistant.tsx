@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff, Volume2, VolumeX, MessageCircle, Trash2, User, Bot, Clock } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, MessageCircle, Trash2, User, Bot, Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VoiceService } from "@/services/voiceService";
@@ -370,6 +370,7 @@ const VoiceAssistant = ({ isActive, onToggle, products }: VoiceAssistantProps) =
             size="sm"
             variant="ghost"
             className="h-8 w-8 p-0 hover:bg-purple-50"
+            title="Toggle chat history"
           >
             <MessageCircle className="h-4 w-4 text-purple-600" />
           </Button>
@@ -379,10 +380,20 @@ const VoiceAssistant = ({ isActive, onToggle, products }: VoiceAssistantProps) =
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-red-50"
+              title="Clear chat history"
             >
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>
           )}
+          <Button
+            onClick={onToggle}
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0 hover:bg-gray-100 hover:text-gray-700"
+            title="Close voice assistant"
+          >
+            <X className="h-4 w-4 text-gray-600" />
+          </Button>
         </div>
       </div>
 

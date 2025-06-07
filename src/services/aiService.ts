@@ -7,7 +7,7 @@ export class AIService {
 
   constructor(products: Product[]) {
     this.products = products;
-    this.baseUrl = 'http://127.0.0.1:8000';
+    this.baseUrl = 'http://localhost:5000';
     this.useRAG = true; // Set to false to use local processing as fallback
   }
 
@@ -29,35 +29,35 @@ export class AIService {
     return this.processLocalQuery(query);
   }
 
-  private async queryRAGBackend(query: string): Promise<string | null> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/assistant/ask/?q=${encodeURIComponent(query)}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(10000), // 10 second timeout
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      return data.answer || null;
-      
-    } catch (error) {
-      console.error('RAG backend error:', error);
-      return null; // Return null to trigger fallback
+private async queryRAGBackend(query: string): Promise<string | null> {
+  try {
+    const response = await fetch(`${this.baseUrl}/api/ask`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ question: query }),
+      signal: AbortSignal.timeout(10000), // 10 second timeout
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    const data = await response.json();
+    
+    if (data.status === 'error') {
+      throw new Error(data.error);
+    }
+    
+    return data.answer || null;
+    
+  } catch (error) {
+    console.error('RAG backend error:', error);
+    return null; // Return null to trigger fallback
   }
+}
 
   private processLocalQuery(query: string): string {
     const lowerQuery = query.toLowerCase();
@@ -232,7 +232,7 @@ export class AIService {
   // Method to check RAG backend status
   public async checkRAGStatus(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/assistant/ask/?q=hello`, {
+      const response = await fetch(`${this.baseUrl}/health`, {
         method: 'GET',
         signal: AbortSignal.timeout(5000), // 5 second timeout
       });
