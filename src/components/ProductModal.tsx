@@ -72,17 +72,18 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[100vw] sm:max-w-[90vw] md:max-w-4xl lg:max-w-5xl xl:max-w-6xl w-full max-h-[100vh] sm:max-h-[90vh] p-0 overflow-hidden bg-white m-0 sm:m-4 rounded-none sm:rounded-xl shadow-2xl border-0 sm:border">
         
-        {/* Mobile/Desktop Header */}
+        {/* Enhanced Mobile/Desktop Header */}
         <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          {/* First Row: Category + Title + Close Button */}
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0 overflow-hidden">
               <Badge 
                 variant="outline" 
-                className="text-xs font-medium text-purple-600 border-purple-200 bg-purple-50 px-2 py-1 whitespace-nowrap flex-shrink-0"
+                className="text-xs font-medium text-purple-600 border-purple-200 bg-purple-50 px-2 py-1 whitespace-nowrap flex-shrink-0 w-fit"
               >
                 {product.category}
               </Badge>
-              <DialogTitle className="text-base sm:text-lg md:text-xl font-bold truncate text-gray-900">
+              <DialogTitle className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 leading-tight break-words line-clamp-2 sm:line-clamp-1 overflow-hidden">
                 {product.name}
               </DialogTitle>
             </div>
@@ -90,32 +91,34 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-gray-100 rounded-full"
+              className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-gray-100 rounded-full ml-2"
             >
               <X className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
           
-          {/* Rating and Stock - Mobile inline */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 sm:mt-0 sm:pt-3 border-t sm:border-t-0 border-gray-100">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1">
+          {/* Second Row: Rating and Stock - Better Mobile Layout */}
+          <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 mt-3 pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-2 text-sm min-w-0 overflow-hidden">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 {renderStars(product.rating)}
               </div>
-              <span className="font-semibold text-gray-700">{product.rating}</span>
-              <span className="text-gray-500">({product.reviews})</span>
+              <span className="font-semibold text-gray-700 flex-shrink-0">{product.rating}</span>
+              <span className="text-gray-500 truncate">({product.reviews || 0} reviews)</span>
             </div>
             <div className={cn(
-              "flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium w-fit",
+              "flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium w-fit flex-shrink-0",
               product.inStock 
                 ? "text-emerald-700 bg-emerald-100" 
                 : "text-red-700 bg-red-100"
             )}>
               <div className={cn(
-                "w-2 h-2 rounded-full",
+                "w-2 h-2 rounded-full flex-shrink-0",
                 product.inStock ? "bg-emerald-500" : "bg-red-500"
               )} />
-              {product.inStock ? 'In Stock' : 'Out of Stock'}
+              <span className="whitespace-nowrap">
+                {product.inStock ? 'In Stock' : 'Out of Stock'}
+              </span>
             </div>
           </div>
         </div>
@@ -199,20 +202,22 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
               {/* Price Section */}
               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 sm:p-6 border border-purple-100">
                 <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-baseline gap-2 sm:gap-3">
-                    <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                      ${product.price}
-                    </span>
-                    {product.originalPrice && (
-                      <div className="flex flex-col">
-                        <span className="text-lg sm:text-xl text-gray-400 line-through">
-                          ${product.originalPrice}
-                        </span>
-                        <span className="text-xs sm:text-sm text-emerald-600 font-semibold">
-                          Save ${(product.originalPrice - product.price).toFixed(2)}
-                        </span>
-                      </div>
-                    )}
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="flex flex-col">
+                      <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight">
+                        ${product.price}
+                      </span>
+                      {product.originalPrice && (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
+                          <span className="text-base sm:text-lg text-gray-400 line-through">
+                            ${product.originalPrice}
+                          </span>
+                          <span className="text-xs sm:text-sm text-emerald-600 font-semibold">
+                            Save ${(product.originalPrice - product.price).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {discountPercentage > 0 && (
                     <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold px-2 sm:px-3 py-1 w-fit border-0 text-xs sm:text-sm">
@@ -224,7 +229,7 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
 
               {/* Description */}
               <div className="space-y-2 sm:space-y-3">
-                <h4 className="text-lg sm:text-xl font-bold text-gray-900">About This Product</h4>
+                <h4 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">About This Product</h4>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                   {product.description}
                 </p>
@@ -232,14 +237,16 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
               
               {/* Key Features */}
               <div className="space-y-3 sm:space-y-4">
-                <h4 className="text-lg sm:text-xl font-bold text-gray-900">Key Features</h4>
+                <h4 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Key Features</h4>
                 <div className="space-y-2">
-                  {product.features.map((feature, index) => (
+                  {product.features?.map((feature, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 transition-all">
                       <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-800 font-medium">{feature}</span>
+                      <span className="text-sm sm:text-base text-gray-800 font-medium break-words">{feature}</span>
                     </div>
-                  ))}
+                  )) || (
+                    <p className="text-sm text-gray-500 italic">No features listed</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -251,9 +258,9 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
           <div className="space-y-3 sm:space-y-4">
             
             {/* Quantity Selector */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h5 className="text-base sm:text-lg font-semibold text-gray-900">Quantity:</h5>
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3">
+              <h5 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 flex-shrink-0">Quantity:</h5>
+              <div className="flex items-center justify-between xs:justify-end gap-3">
                 <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
                   <Button
                     variant="ghost"
@@ -264,7 +271,7 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <div className="px-4 sm:px-6 py-2 sm:py-3 min-w-[3rem] sm:min-w-[4rem] text-center font-bold text-base sm:text-lg bg-white border-x border-gray-200">
+                  <div className="px-3 sm:px-4 py-2 sm:py-3 min-w-[2.5rem] sm:min-w-[3rem] text-center font-bold text-sm sm:text-base lg:text-lg bg-white border-x border-gray-200">
                     {quantity}
                   </div>
                   <Button
@@ -277,15 +284,15 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-                <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">Max 10</span>
+                <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap flex-shrink-0">Max 10</span>
               </div>
             </div>
 
             {/* Total Price Display */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-3 sm:p-4 text-white shadow-lg">
               <div className="flex justify-between items-center">
-                <span className="text-base sm:text-lg font-semibold">Total Price:</span>
-                <span className="text-xl sm:text-2xl font-bold">
+                <span className="text-sm sm:text-base lg:text-lg font-semibold">Total Price:</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-bold">
                   ${(product.price * quantity).toFixed(2)}
                 </span>
               </div>
@@ -298,11 +305,13 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
                 disabled={!product.inStock}
                 className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-300 font-bold py-3 sm:py-4 shadow-lg hover:shadow-xl rounded-lg border-0 text-sm sm:text-base"
               >
-                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                {product.inStock 
-                  ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'} to Cart`
-                  : 'Currently Out of Stock'
-                }
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                <span className="truncate">
+                  {product.inStock 
+                    ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'} to Cart`
+                    : 'Currently Out of Stock'
+                  }
+                </span>
               </Button>
               
               {product.inStock && (
@@ -311,25 +320,25 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
                     variant="outline"
                     onClick={() => setIsWishlisted(!isWishlisted)}
                     className={cn(
-                      "flex-1 hover:bg-purple-50 hover:border-purple-300 py-2 sm:py-3 text-sm sm:text-base font-semibold rounded-lg border-2 transition-all",
+                      "flex-1 hover:bg-purple-50 hover:border-purple-300 py-2 sm:py-3 text-sm sm:text-base font-semibold rounded-lg border-2 transition-all min-w-0",
                       isWishlisted && "bg-purple-50 border-purple-300 text-purple-700"
                     )}
                   >
                     <Heart className={cn(
-                      "w-4 h-4 mr-1 sm:mr-2",
+                      "w-4 h-4 mr-1 sm:mr-2 flex-shrink-0",
                       isWishlisted && "fill-purple-600 text-purple-600"
                     )} />
-                    <span className="hidden sm:inline">
+                    <span className="hidden sm:inline truncate">
                       {isWishlisted ? 'Wishlisted' : 'Wishlist'}
                     </span>
                     <span className="sm:hidden">♥</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 hover:bg-purple-50 hover:border-purple-300 py-2 sm:py-3 text-sm sm:text-base font-semibold rounded-lg border-2 transition-all"
+                    className="flex-1 hover:bg-purple-50 hover:border-purple-300 py-2 sm:py-3 text-sm sm:text-base font-semibold rounded-lg border-2 transition-all min-w-0"
                   >
-                    <Share2 className="w-4 h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Share</span>
+                    <Share2 className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                    <span className="hidden sm:inline truncate">Share</span>
                     <span className="sm:hidden">📤</span>
                   </Button>
                 </div>

@@ -31,7 +31,7 @@ export class AIService {
 
   private async queryRAGBackend(query: string): Promise<string | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/assistant/ask/?q=${encodeURIComponent(query)}`, {
+      const response = await fetch(`${this.baseUrl}/api/assistant/ask/?q=${encodeURIComponent(query)}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -232,7 +232,7 @@ export class AIService {
   // Method to check RAG backend status
   public async checkRAGStatus(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/assistant/ask/?q=hello`, {
+      const response = await fetch(`${this.baseUrl}/api/assistant/ask/?q=hello`, {
         method: 'GET',
         signal: AbortSignal.timeout(5000), // 5 second timeout
       });
