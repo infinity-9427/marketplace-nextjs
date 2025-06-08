@@ -11,10 +11,30 @@ export interface Product {
   originalPrice?: number;
   image: string;
   category: string;
+  subcategory?: string;
+  brand?: string;
   rating: number;
   reviews: number;
   description: string;
   features: string[];
+  tags?: string[];
+  specifications?: Record<string, any>;
+  priceRange?: string;
+  targetAudience?: string[];
+  embeddings?: {
+    text: string;
+    features_vector: number[];
+    price_tier: number;
+  };
+  similarProducts?: string[];
+  crossSell?: string[];
+  alternativeModels?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    improvements: string[];
+    tradeoffs: string[];
+  }>;
   inStock: boolean;
 }
 
