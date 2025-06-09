@@ -1,28 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/ProductModal";
 import VoiceAssistant from "@/components/VoiceAssistant";
-import { sampleProducts } from "@/data/products";
 import { Product } from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
 
 const page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState(sampleProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products from Supabase
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data: products } = await supabase.from('products').select();
+        console.log(JSON.stringify(products, null, 2), "products from supabase");
+        
+        if (products) {
+          setProducts(products);
+          setFilteredProducts(products);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     if (query.trim() === "") {
-      setFilteredProducts(sampleProducts);
+      setFilteredProducts(products);
     } else {
-      const filtered = sampleProducts.filter(product =>
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase())
+      const filtered = products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query.toLowerCase()) ||
+          product.category.toLowerCase().includes(query.toLowerCase()) ||
+          product.description.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredProducts(filtered);
     }
@@ -37,6 +61,14 @@ const page = () => {
     setIsVoiceActive(!isVoiceActive);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 flex items-center justify-center">
+        <div className="text-xl">Loading products...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
       <Header
@@ -44,17 +76,16 @@ const page = () => {
         onSearchChange={handleSearchChange}
         onVoiceActivate={handleVoiceToggle}
       />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Discover Amazing Products
           </h2>
           <p className="text-gray-600">
-            {searchQuery 
+            {searchQuery
               ? `Found ${filteredProducts.length} results for "${searchQuery}"`
-              : `Browse our collection of ${sampleProducts.length} premium products`
-            }
+              : `Browse our collection of ${products.length} premium products`}
           </p>
         </div>
 
@@ -91,10 +122,10 @@ const page = () => {
       <VoiceAssistant
         isActive={isVoiceActive}
         onToggle={handleVoiceToggle}
-        products={sampleProducts}
+        products={products}
       />
     </div>
   );
-}
+};
 
-export default page
+export default page;

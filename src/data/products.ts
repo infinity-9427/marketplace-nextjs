@@ -10,8 +10,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "AudioTech",
-    rating: 4.8,
-    reviews: 2847,
     description: "Premium wireless headphones with industry-leading noise cancellation and 30-hour battery life.",
     features: [
       "Active Noise Cancellation with 8 microphones",
@@ -27,24 +25,6 @@ export const sampleProducts: Product[] = [
       weight: "250g",
       driverSize: "40mm"
     },
-    priceRange: "premium",
-    targetAudience: ["professionals", "audiophiles", "travelers"],
-    embeddings: {
-      text: "wireless noise canceling headphones premium audio bluetooth long battery life comfort",
-      features_vector: [0.9, 0.8, 0.7, 0.9, 0.6],
-      price_tier: 3
-    },
-    similarProducts: ["9", "10"],
-    crossSell: ["8", "21"],
-    alternativeModels: [
-      {
-        id: "1a",
-        name: "AudioTech Pro Max",
-        price: 449.99,
-        improvements: ["Better noise cancellation", "40-hour battery", "Premium materials"],
-        tradeoffs: ["Higher price", "Heavier weight"]
-      }
-    ],
     inStock: true
   },
   {
@@ -56,8 +36,6 @@ export const sampleProducts: Product[] = [
     category: "Wearables",
     subcategory: "Fitness",
     brand: "FitPro",
-    rating: 4.6,
-    reviews: 1523,
     description: "Advanced fitness tracker with GPS, heart rate monitoring, and 7-day battery life.",
     features: [
       "Built-in GPS for accurate tracking",
@@ -73,15 +51,6 @@ export const sampleProducts: Product[] = [
       displaySize: "1.4 inches",
       sensors: ["GPS", "Heart Rate", "Accelerometer"]
     },
-    priceRange: "mid",
-    targetAudience: ["fitness-enthusiasts", "health-conscious", "athletes"],
-    embeddings: {
-      text: "smart fitness tracker gps heart rate monitoring health waterproof notifications",
-      features_vector: [0.7, 0.8, 0.9, 0.6, 0.7],
-      price_tier: 2
-    },
-    similarProducts: ["11", "12"],
-    crossSell: ["13", "8"],
     inStock: true
   },
   {
@@ -92,8 +61,6 @@ export const sampleProducts: Product[] = [
     category: "Furniture",
     subcategory: "Office",
     brand: "ErgoComfort",
-    rating: 4.7,
-    reviews: 892,
     description: "Professional ergonomic office chair with lumbar support and adjustable features.",
     features: [
       "Adjustable lumbar support",
@@ -109,15 +76,6 @@ export const sampleProducts: Product[] = [
       adjustments: ["height", "tilt", "lumbar"],
       warranty: "5 years"
     },
-    priceRange: "premium",
-    targetAudience: ["office-workers", "remote-workers", "professionals"],
-    embeddings: {
-      text: "ergonomic office chair lumbar support adjustable professional comfort mesh",
-      features_vector: [0.9, 0.6, 0.8, 0.7, 0.5],
-      price_tier: 3
-    },
-    similarProducts: ["14", "15"],
-    crossSell: ["7", "16"],
     inStock: false
   },
   {
@@ -129,8 +87,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "SoundWave",
-    rating: 4.4,
-    reviews: 3241,
     description: "Waterproof portable speaker with 360-degree sound and 20-hour battery life.",
     features: [
       "360-degree surround sound",
@@ -146,15 +102,6 @@ export const sampleProducts: Product[] = [
       connectivity: "Bluetooth 5.0",
       power: "20W"
     },
-    priceRange: "budget",
-    targetAudience: ["outdoor-enthusiasts", "music-lovers", "travelers"],
-    embeddings: {
-      text: "portable bluetooth speaker waterproof 360 sound wireless outdoor music",
-      features_vector: [0.6, 0.8, 0.7, 0.9, 0.7],
-      price_tier: 1
-    },
-    similarProducts: ["17", "18"],
-    crossSell: ["8", "21"],
     inStock: true
   },
   {
@@ -165,8 +112,6 @@ export const sampleProducts: Product[] = [
     category: "Smart Home",
     subcategory: "Security",
     brand: "SecureVision",
-    rating: 4.5,
-    reviews: 1876,
     description: "AI-powered security camera with 4K video, night vision, and smart alerts.",
     features: [
       "4K Ultra HD video recording",
@@ -182,24 +127,6 @@ export const sampleProducts: Product[] = [
       storage: ["Cloud", "Local"],
       detection: "AI-powered"
     },
-    priceRange: "mid",
-    targetAudience: ["homeowners", "security-conscious", "tech-enthusiasts"],
-    embeddings: {
-      text: "smart security camera 4k night vision ai detection home surveillance two-way audio",
-      features_vector: [0.8, 0.7, 0.9, 0.8, 0.6],
-      price_tier: 2
-    },
-    similarProducts: ["19", "20"],
-    crossSell: ["22", "23"],
-    alternativeModels: [
-      {
-        id: "5a",
-        name: "SecureVision Pro",
-        price: 229.99,
-        improvements: ["Better zoom capability", "Enhanced AI detection", "Longer night vision range"],
-        tradeoffs: ["Higher price", "Requires subscription for advanced features"]
-      }
-    ],
     inStock: true
   },
   {
@@ -211,8 +138,6 @@ export const sampleProducts: Product[] = [
     category: "Kitchen",
     subcategory: "Appliances",
     brand: "BrewMaster",
-    rating: 4.6,
-    reviews: 967,
     description: "Programmable drip coffee maker with thermal carafe and customizable brewing options.",
     features: [
       "12-cup thermal carafe",
@@ -228,15 +153,6 @@ export const sampleProducts: Product[] = [
       programmable: true,
       filterType: "Gold-tone permanent"
     },
-    priceRange: "mid",
-    targetAudience: ["coffee-enthusiasts", "busy-professionals", "families"],
-    embeddings: {
-      text: "premium coffee maker programmable thermal carafe brew strength timer kitchen",
-      features_vector: [0.7, 0.6, 0.8, 0.5, 0.7],
-      price_tier: 2
-    },
-    similarProducts: [],
-    crossSell: [],
     inStock: true
   },
   {
@@ -247,8 +163,6 @@ export const sampleProducts: Product[] = [
     category: "Gaming",
     subcategory: "Peripherals",
     brand: "GamePro",
-    rating: 4.8,
-    reviews: 2156,
     description: "RGB mechanical keyboard with tactile switches and customizable lighting effects.",
     features: [
       "Mechanical tactile switches",
@@ -264,15 +178,6 @@ export const sampleProducts: Product[] = [
       connectivity: "USB-C",
       keyLayout: "Full-size"
     },
-    priceRange: "mid",
-    targetAudience: ["gamers", "programmers", "enthusiasts"],
-    embeddings: {
-      text: "mechanical gaming keyboard rgb tactile switches programmable macro anti-ghosting",
-      features_vector: [0.9, 0.8, 0.7, 0.8, 0.6],
-      price_tier: 2
-    },
-    similarProducts: [],
-    crossSell: ["3", "29"],
     inStock: true
   },
   {
@@ -284,8 +189,6 @@ export const sampleProducts: Product[] = [
     category: "Accessories",
     subcategory: "Charging",
     brand: "ChargeTech",
-    rating: 4.3,
-    reviews: 1432,
     description: "Fast wireless charging pad compatible with all Qi-enabled devices.",
     features: [
       "10W fast wireless charging",
@@ -301,15 +204,6 @@ export const sampleProducts: Product[] = [
       safety: "Overcharge protection",
       indicator: "LED"
     },
-    priceRange: "budget",
-    targetAudience: ["smartphone-users", "convenience-seekers", "tech-users"],
-    embeddings: {
-      text: "wireless charging pad qi fast charging accessory led indicator overcharge protection",
-      features_vector: [0.6, 0.7, 0.5, 0.8, 0.9],
-      price_tier: 1
-    },
-    similarProducts: ["21"],
-    crossSell: ["1", "2", "4"],
     inStock: true
   },
   {
@@ -320,8 +214,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "AudioTech",
-    rating: 4.9,
-    reviews: 1876,
     description: "Professional studio monitor headphones with flat frequency response and exceptional clarity.",
     features: [
       "Flat frequency response",
@@ -337,15 +229,6 @@ export const sampleProducts: Product[] = [
       design: "Open-back",
       driverSize: "40mm"
     },
-    priceRange: "mid",
-    targetAudience: ["audio-professionals", "musicians", "audiophiles"],
-    embeddings: {
-      text: "studio monitor headphones professional flat frequency response open back audio clarity",
-      features_vector: [0.9, 0.6, 0.8, 0.9, 0.5],
-      price_tier: 2
-    },
-    similarProducts: ["1", "10"],
-    crossSell: [],
     inStock: true
   },
   {
@@ -357,8 +240,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "SoundWave",
-    rating: 4.2,
-    reviews: 3421,
     description: "Affordable wireless headphones with good sound quality and 25-hour battery life.",
     features: [
       "25-hour battery life",
@@ -374,24 +255,6 @@ export const sampleProducts: Product[] = [
       connectivity: "Bluetooth 5.0",
       quickCharge: "2 hours for full charge"
     },
-    priceRange: "budget",
-    targetAudience: ["students", "casual-listeners", "budget-conscious"],
-    embeddings: {
-      text: "budget wireless headphones affordable good sound quality long battery lightweight",
-      features_vector: [0.6, 0.7, 0.5, 0.8, 0.8],
-      price_tier: 1
-    },
-    similarProducts: ["1", "9"],
-    crossSell: ["8"],
-    alternativeModels: [
-      {
-        id: "10a",
-        name: "SoundWave Plus",
-        price: 129.99,
-        improvements: ["Active noise cancellation", "Better build quality", "Premium materials"],
-        tradeoffs: ["Higher price", "Slightly heavier"]
-      }
-    ],
     inStock: true
   },
   {
@@ -402,8 +265,6 @@ export const sampleProducts: Product[] = [
     category: "Wearables",
     subcategory: "Fitness",
     brand: "SportsTech",
-    rating: 4.7,
-    reviews: 2134,
     description: "Premium sports watch with advanced metrics, GPS, and multi-sport tracking.",
     features: [
       "Multi-sport tracking modes",
@@ -419,15 +280,6 @@ export const sampleProducts: Product[] = [
       glass: "Sapphire crystal",
       sensors: ["GPS", "GLONASS", "Heart Rate", "Barometer"]
     },
-    priceRange: "premium",
-    targetAudience: ["serious-athletes", "outdoor-enthusiasts", "professionals"],
-    embeddings: {
-      text: "advanced sports watch premium multi-sport gps performance metrics rugged sapphire",
-      features_vector: [0.9, 0.8, 0.9, 0.7, 0.6],
-      price_tier: 3
-    },
-    similarProducts: ["2", "12"],
-    crossSell: ["13"],
     inStock: true
   },
   {
@@ -439,8 +291,6 @@ export const sampleProducts: Product[] = [
     category: "Wearables",
     subcategory: "Fitness",
     brand: "FitBasic",
-    rating: 4.1,
-    reviews: 4567,
     description: "Simple and affordable fitness band with step tracking and heart rate monitoring.",
     features: [
       "Step and calorie tracking",
@@ -456,24 +306,6 @@ export const sampleProducts: Product[] = [
       display: "OLED",
       connectivity: "Bluetooth 4.0"
     },
-    priceRange: "budget",
-    targetAudience: ["beginners", "casual-fitness", "budget-conscious"],
-    embeddings: {
-      text: "basic fitness band affordable step tracking heart rate monitoring simple design",
-      features_vector: [0.5, 0.7, 0.6, 0.8, 0.9],
-      price_tier: 1
-    },
-    similarProducts: ["2", "11"],
-    crossSell: ["8"],
-    alternativeModels: [
-      {
-        id: "12a",
-        name: "FitBasic Pro",
-        price: 99.99,
-        improvements: ["GPS tracking", "Color display", "More sports modes"],
-        tradeoffs: ["Higher price", "Shorter battery life"]
-      }
-    ],
     inStock: true
   },
   {
@@ -484,8 +316,6 @@ export const sampleProducts: Product[] = [
     category: "Fitness",
     subcategory: "Equipment",
     brand: "FlexFit",
-    rating: 4.5,
-    reviews: 2876,
     description: "Complete resistance bands set with multiple resistance levels and accessories.",
     features: [
       "5 resistance levels",
@@ -501,15 +331,6 @@ export const sampleProducts: Product[] = [
       material: "Natural latex",
       accessories: ["Door anchor", "Handles", "Bag"]
     },
-    priceRange: "budget",
-    targetAudience: ["home-fitness", "travelers", "beginners"],
-    embeddings: {
-      text: "resistance bands set home gym portable exercise equipment complete accessories",
-      features_vector: [0.7, 0.8, 0.6, 0.9, 0.8],
-      price_tier: 1
-    },
-    similarProducts: [],
-    crossSell: ["2", "11"],
     inStock: true
   },
   {
@@ -520,8 +341,6 @@ export const sampleProducts: Product[] = [
     category: "Furniture",
     subcategory: "Office",
     brand: "LuxurySeating",
-    rating: 4.8,
-    reviews: 567,
     description: "Premium executive chair with genuine leather upholstery and advanced ergonomics.",
     features: [
       "Genuine leather upholstery",
@@ -537,15 +356,6 @@ export const sampleProducts: Product[] = [
       weightCapacity: "350 lbs",
       warranty: "10 years"
     },
-    priceRange: "luxury",
-    targetAudience: ["executives", "luxury-seekers", "professionals"],
-    embeddings: {
-      text: "executive leather chair premium genuine upholstery heated massage luxury ergonomic",
-      features_vector: [0.9, 0.5, 0.8, 0.6, 0.4],
-      price_tier: 4
-    },
-    similarProducts: ["3", "15"],
-    crossSell: ["16"],
     inStock: true
   },
   {
@@ -556,8 +366,6 @@ export const sampleProducts: Product[] = [
     category: "Furniture",
     subcategory: "Office",
     brand: "ErgoDesk",
-    rating: 4.6,
-    reviews: 1234,
     description: "Adjustable standing desk converter that transforms any desk into a sit-stand workstation.",
     features: [
       "Height adjustable design",
@@ -573,15 +381,6 @@ export const sampleProducts: Product[] = [
       weightCapacity: "33 lbs",
       dimensions: "36 x 22 inches"
     },
-    priceRange: "mid",
-    targetAudience: ["office-workers", "health-conscious", "remote-workers"],
-    embeddings: {
-      text: "standing desk converter adjustable sit stand workstation dual monitor ergonomic",
-      features_vector: [0.8, 0.7, 0.9, 0.8, 0.6],
-      price_tier: 2
-    },
-    similarProducts: ["3", "14"],
-    crossSell: ["7", "16"],
     inStock: true
   },
   {
@@ -592,8 +391,6 @@ export const sampleProducts: Product[] = [
     category: "Furniture",
     subcategory: "Lighting",
     brand: "BrightWork",
-    rating: 4.4,
-    reviews: 1876,
     description: "Smart LED desk lamp with adjustable brightness and color temperature.",
     features: [
       "Adjustable brightness levels",
@@ -609,15 +406,6 @@ export const sampleProducts: Product[] = [
       usbPort: "5V/1A",
       power: "12W LED"
     },
-    priceRange: "budget",
-    targetAudience: ["students", "office-workers", "readers"],
-    embeddings: {
-      text: "led desk lamp adjustable brightness color temperature usb charging smart touch",
-      features_vector: [0.7, 0.8, 0.6, 0.7, 0.8],
-      price_tier: 1
-    },
-    similarProducts: [],
-    crossSell: ["3", "15"],
     inStock: true
   },
   {
@@ -628,8 +416,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "AdventureTech",
-    rating: 4.6,
-    reviews: 2341,
     description: "Ultra-rugged Bluetooth speaker designed for extreme outdoor conditions.",
     features: [
       "IP67 waterproof and dustproof",
@@ -645,15 +431,6 @@ export const sampleProducts: Product[] = [
       shockproof: "Military grade",
       powerBank: "Built-in USB"
     },
-    priceRange: "mid",
-    targetAudience: ["outdoor-enthusiasts", "adventurers", "construction-workers"],
-    embeddings: {
-      text: "rugged outdoor speaker waterproof shockproof military grade power bank adventure",
-      features_vector: [0.9, 0.8, 0.7, 0.8, 0.6],
-      price_tier: 2
-    },
-    similarProducts: ["4", "18"],
-    crossSell: ["21"],
     inStock: true
   },
   {
@@ -665,8 +442,6 @@ export const sampleProducts: Product[] = [
     category: "Electronics",
     subcategory: "Audio",
     brand: "TravelSound",
-    rating: 4.2,
-    reviews: 1567,
     description: "Ultra-compact Bluetooth speaker perfect for travel with surprising sound quality.",
     features: [
       "Ultra-compact design",
@@ -682,15 +457,6 @@ export const sampleProducts: Product[] = [
       batteryLife: "12 hours",
       waterResistance: "IPX4"
     },
-    priceRange: "budget",
-    targetAudience: ["travelers", "students", "minimalists"],
-    embeddings: {
-      text: "compact travel speaker portable ultra small water resistant bluetooth microphone",
-      features_vector: [0.5, 0.9, 0.6, 0.7, 0.8],
-      price_tier: 1
-    },
-    similarProducts: ["4", "17"],
-    crossSell: ["21", "8"],
     inStock: true
   },
   {
@@ -701,8 +467,6 @@ export const sampleProducts: Product[] = [
     category: "Smart Home",
     subcategory: "Security",
     brand: "SecureVision",
-    rating: 4.7,
-    reviews: 1456,
     description: "Advanced pan-tilt security camera with 4K resolution and smart tracking.",
     features: [
       "Pan and tilt functionality",
@@ -718,15 +482,6 @@ export const sampleProducts: Product[] = [
       tracking: "AI-powered",
       nightVision: "Color night vision"
     },
-    priceRange: "premium",
-    targetAudience: ["security-professionals", "homeowners", "tech-enthusiasts"],
-    embeddings: {
-      text: "pan tilt security camera 4k auto tracking smart motion zones surveillance",
-      features_vector: [0.9, 0.7, 0.9, 0.8, 0.6],
-      price_tier: 3
-    },
-    similarProducts: ["5", "20"],
-    crossSell: ["22", "23"],
     inStock: true
   },
   {
@@ -738,8 +493,6 @@ export const sampleProducts: Product[] = [
     category: "Smart Home",
     subcategory: "Security",
     brand: "HomeSafe",
-    rating: 4.0,
-    reviews: 3456,
     description: "Affordable security camera with essential features for basic home monitoring.",
     features: [
       "1080p HD recording",
@@ -755,24 +508,6 @@ export const sampleProducts: Product[] = [
       storage: "Cloud/SD card",
       connectivity: "Wi-Fi"
     },
-    priceRange: "budget",
-    targetAudience: ["budget-conscious", "renters", "basic-security"],
-    embeddings: {
-      text: "budget security camera 1080p hd motion detection night vision affordable basic",
-      features_vector: [0.6, 0.7, 0.8, 0.7, 0.9],
-      price_tier: 1
-    },
-    similarProducts: ["5", "19"],
-    crossSell: ["22"],
-    alternativeModels: [
-      {
-        id: "20a",
-        name: "HomeSafe Pro",
-        price: 139.99,
-        improvements: ["2K resolution", "Color night vision", "AI detection"],
-        tradeoffs: ["Higher price", "Requires subscription for cloud storage"]
-      }
-    ],
     inStock: true
   },
   {
@@ -783,8 +518,6 @@ export const sampleProducts: Product[] = [
     category: "Accessories",
     subcategory: "Automotive",
     brand: "DriveEasy",
-    rating: 4.3,
-    reviews: 5432,
     description: "Universal car phone mount with wireless charging capability.",
     features: [
       "Wireless charging pad",
@@ -800,15 +533,6 @@ export const sampleProducts: Product[] = [
       mounting: "Dashboard/Windshield",
       rotation: "360 degrees"
     },
-    priceRange: "budget",
-    targetAudience: ["drivers", "commuters", "rideshare-drivers"],
-    embeddings: {
-      text: "car phone mount wireless charging magnetic universal hands free driving safety",
-      features_vector: [0.7, 0.8, 0.6, 0.9, 0.8],
-      price_tier: 1
-    },
-    similarProducts: ["8"],
-    crossSell: ["1", "4", "17"],
     inStock: true
   },
   {
@@ -819,8 +543,6 @@ export const sampleProducts: Product[] = [
     category: "Smart Home",
     subcategory: "Security",
     brand: "SecureHome",
-    rating: 4.5,
-    reviews: 2134,
     description: "Smart deadbolt lock with keypad, fingerprint, and smartphone access.",
     features: [
       "Multiple access methods",
@@ -836,15 +558,6 @@ export const sampleProducts: Product[] = [
       connectivity: "Bluetooth/Wi-Fi",
       userCapacity: "100 users"
     },
-    priceRange: "mid",
-    targetAudience: ["homeowners", "tech-enthusiasts", "security-conscious"],
-    embeddings: {
-      text: "smart door lock fingerprint keypad smartphone app auto lock guest access security",
-      features_vector: [0.8, 0.6, 0.9, 0.7, 0.7],
-      price_tier: 2
-    },
-    similarProducts: ["23"],
-    crossSell: ["5", "19", "20"],
     inStock: true
   },
   {
@@ -856,8 +569,6 @@ export const sampleProducts: Product[] = [
     category: "Smart Home",
     subcategory: "Security",
     brand: "DoorGuard",
-    rating: 4.4,
-    reviews: 3421,
     description: "Smart video doorbell with HD video, two-way talk, and motion detection.",
     features: [
       "1080p HD video",
@@ -873,15 +584,6 @@ export const sampleProducts: Product[] = [
       storage: "Cloud included",
       power: "Rechargeable battery"
     },
-    priceRange: "mid",
-    targetAudience: ["homeowners", "renters", "security-conscious"],
-    embeddings: {
-      text: "smart doorbell camera hd video two way audio motion detection night vision",
-      features_vector: [0.8, 0.7, 0.8, 0.8, 0.7],
-      price_tier: 2
-    },
-    similarProducts: ["22"],
-    crossSell: ["5", "19"],
     inStock: true
   }
 ];

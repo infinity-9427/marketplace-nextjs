@@ -13,28 +13,10 @@ export interface Product {
   category: string;
   subcategory?: string;
   brand?: string;
-  rating: number;
-  reviews: number;
   description: string;
   features: string[];
   tags?: string[];
   specifications?: Record<string, any>;
-  priceRange?: string;
-  targetAudience?: string[];
-  embeddings?: {
-    text: string;
-    features_vector: number[];
-    price_tier: number;
-  };
-  similarProducts?: string[];
-  crossSell?: string[];
-  alternativeModels?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    improvements: string[];
-    tradeoffs: string[];
-  }>;
   inStock: boolean;
 }
 
@@ -56,33 +38,6 @@ const ProductCard = ({ product, onAddToCart, onProductClick }: ProductCardProps)
 
   const handleImageError = () => {
     setImageError(true);
-  };
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-      );
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <StarHalf key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-      );
-    }
-
-    const remainingStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(
-        <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
-      );
-    }
-
-    return stars;
   };
 
   return (
@@ -147,16 +102,6 @@ const ProductCard = ({ product, onAddToCart, onProductClick }: ProductCardProps)
         <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed flex-1">
           {product.description}
         </p>
-        
-        {/* Rating */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-1">
-            {renderStars(product.rating)}
-          </div>
-          <span className="text-sm text-gray-500 font-medium">
-            {product.rating} ({product.reviews})
-          </span>
-        </div>
         
         {/* Price */}
         <div className="flex items-center justify-between mb-4">
