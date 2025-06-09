@@ -33,7 +33,7 @@ const Header = ({
             {/* Logo */}
             <div className="flex items-center">
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Marketplace
+                La tienda de Perlita
               </h1>
             </div>
 
