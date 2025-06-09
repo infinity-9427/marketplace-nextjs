@@ -1,8 +1,196 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Marketplace - AI-Powered E-commerce Platform
 
-## Getting Started
+A modern, feature-rich e-commerce marketplace built with Next.js, featuring AI-powered voice assistance, real-time product search, and comprehensive user management.
 
-First, run the development server:
+## 🚀 Features
+
+### Core E-commerce Functionality
+- **Product Catalog**: Browse through categorized products with detailed specifications
+- **Shopping Cart**: Add, remove, and manage items with quantity controls
+- **Checkout System**: Complete order processing with shipping and payment details
+- **User Profiles**: Account management with order history tracking
+- **Responsive Design**: Mobile-first design that works across all devices
+
+### AI-Powered Voice Assistant
+- **Voice Commands**: Natural language product search and navigation
+- **Real-time Transcription**: Live speech-to-text conversion
+- **Smart Responses**: AI-generated contextual responses
+- **Chat History**: Persistent conversation tracking
+- **Multi-modal Interaction**: Both voice and text input support
+
+### Advanced Search & Discovery
+- **Smart Search Bar**: Real-time product filtering and suggestions
+- **Category Browsing**: Organized product categories and subcategories
+- **AI Recommendations**: Personalized product suggestions
+- **Product Comparisons**: Feature and specification comparisons
+
+### Product Management
+- **Detailed Product Pages**: Comprehensive product information with images
+- **Inventory Tracking**: Real-time stock status
+- **Product Variants**: Multiple options and specifications
+- **Cross-selling**: Related product suggestions
+
+### User Experience
+- **Authentication**: Secure user login and registration via Supabase
+- **Order Management**: Complete order lifecycle tracking
+- **Wishlist Functionality**: Save favorite products
+- **Mobile-Optimized**: Touch-friendly interface for mobile devices
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Modern component library
+- **Lucide React** - Beautiful icons
+
+### Backend & Database
+- **Supabase** - Backend-as-a-Service
+- **PostgreSQL** - Relational database
+- **Row Level Security** - Data protection
+
+### AI & Voice Services
+- **Web Speech API** - Browser-native speech recognition
+- **Custom AI Service** - Product search and recommendations
+- **RAG Backend** - Advanced query processing (optional)
+
+### State Management
+- **React Hooks** - Local state management
+- **Custom Hooks** - Reusable logic (cart, products, etc.)
+- **React Query** - Server state management
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js 18+ 
+- npm, yarn, pnpm, or bun
+- Supabase account
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd marketplace
+```
+
+### 2. Install Dependencies
+```bash
+# Using npm
+npm install
+
+# Using yarn
+yarn install
+
+# Using pnpm
+pnpm install
+
+# Using bun
+bun install
+```
+
+### 3. Environment Setup
+Create a `.env.local` file in the root directory:
+
+```bash
+# Copy the example file
+cp .env.local.example .env.local
+```
+
+Update the environment variables:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Database Setup
+
+#### Supabase Tables
+Create the following tables in your Supabase project:
+
+```sql
+-- Users profiles
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE,
+  full_name TEXT,
+  email TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+-- Products
+CREATE TABLE products (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  original_price DECIMAL(10,2),
+  image TEXT,
+  category TEXT,
+  subcategory TEXT,
+  brand TEXT,
+  description TEXT,
+  features TEXT[],
+  tags TEXT[],
+  specifications JSONB,
+  in_stock BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Orders
+CREATE TABLE orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE,
+  total_amount DECIMAL(10,2) NOT NULL,
+  status TEXT DEFAULT 'pending',
+  shipping_address JSONB,
+  payment_method TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Order items
+CREATE TABLE order_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  order_id UUID REFERENCES orders ON DELETE CASCADE,
+  product_id TEXT,
+  quantity INTEGER NOT NULL,
+  price_at_time DECIMAL(10,2) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Cart items
+CREATE TABLE cart_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE,
+  product_id TEXT NOT NULL,
+  quantity INTEGER NOT NULL DEFAULT 1,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
+```
+
+#### Row Level Security (RLS)
+Enable RLS and create policies for secure data access:
+
+```sql
+-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
+
+-- Profiles policies
+CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Orders policies
+CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can create orders" ON orders FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Cart policies
+CREATE POLICY "Users can manage own cart" ON cart_items USING (auth.uid() = user_id);
+```
+
+### 5. Run the Development Server
 
 ```bash
 npm run dev
@@ -14,23 +202,143 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx          # Home page
+│   ├── cart/             # Cart page
+│   ├── checkout/         # Checkout page
+│   └── profile/          # User profile page
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── CartView.tsx      # Shopping cart interface
+│   ├── CheckoutPage.tsx  # Checkout form
+│   ├── Header.tsx        # Navigation header
+│   ├── ProductCard.tsx   # Product display card
+│   ├── ProductModal.tsx  # Product details modal
+│   ├── ProfileView.tsx   # User profile interface
+│   ├── SearchBar.tsx     # Product search
+│   └── VoiceAssistant.tsx # AI voice interface
+├── data/                 # Static data
+│   ├── products.csv      # Product database
+│   └── products.ts       # Product type definitions
+├── hooks/                # Custom React hooks
+│   ├── useCart.ts        # Cart management
+│   ├── useProducts.ts    # Product data fetching
+│   └── use-toast.ts      # Toast notifications
+├── integrations/         # External services
+│   └── supabase/         # Supabase client config
+├── lib/                  # Utility functions
+│   └── utils.ts          # Helper functions
+├── pages/                # Page components
+│   ├── Index.tsx         # Main marketplace page
+│   └── NotFound.tsx      # 404 error page
+├── services/             # Business logic
+│   ├── aiService.ts      # AI assistant logic
+│   └── voiceService.ts   # Speech recognition
+└── types/                # TypeScript definitions
+    └── language.ts       # Type definitions
+```
 
-## Learn More
+## 🎯 Usage Guide
 
-To learn more about Next.js, take a look at the following resources:
+### Shopping Experience
+1. **Browse Products**: Explore the product catalog on the home page
+2. **Search**: Use the search bar or voice commands to find specific items
+3. **Product Details**: Click on products to view detailed information
+4. **Add to Cart**: Select quantities and add items to your shopping cart
+5. **Checkout**: Complete your purchase with shipping and payment details
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Voice Assistant
+1. **Activate**: Click the microphone button in the bottom-right corner
+2. **Voice Commands**: Try phrases like:
+   - "Show me wireless headphones"
+   - "What's the price of the fitness tracker?"
+   - "Add gaming mouse to cart"
+   - "What do you recommend?"
+3. **Chat History**: View previous conversations in the chat panel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Account Management
+1. **Sign Up/Login**: Create an account or sign in with existing credentials
+2. **Profile**: Update your personal information in the profile section
+3. **Order History**: Track all your previous purchases
+4. **Cart Persistence**: Your cart items are saved across sessions
 
-## Deploy on Vercel
+## 🔧 Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Voice Assistant Settings
+The voice assistant can be configured in [`VoiceAssistant.tsx`](src/components/VoiceAssistant.tsx):
+- Auto-submit delay timing
+- Speech recognition languages
+- RAG backend integration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Product Data
+Products are stored in [`products.csv`](src/data/products.csv) and can be:
+- Modified directly in the CSV file
+- Managed through the Supabase database
+- Extended with additional fields
+
+### Styling
+- Global styles: [`globals.css`](src/app/globals.css)
+- Component styles: Tailwind classes
+- Theme customization: [`components.json`](components.json)
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on every push
+
+### Manual Deployment
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm start
+```
+
+### Environment Variables for Production
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_key
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support and questions:
+- Check the [Next.js Documentation](https://nextjs.org/docs)
+- Review [Supabase Documentation](https://supabase.com/docs)
+- Open an issue in the repository
+
+## 🔄 Recent Updates
+
+- ✅ AI-powered voice assistant
+- ✅ Real-time product search
+- ✅ Mobile-responsive design
+- ✅ Complete checkout flow
+- ✅ User authentication
+- ✅ Order management system
+
+---
+
+Built with ❤️ using Next.js and Supabase
