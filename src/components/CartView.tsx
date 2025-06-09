@@ -1,16 +1,30 @@
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import { useCart } from "@/hooks/useCart";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import { 
+  useCartQuery, 
+  useRemoveFromCart, 
+  useUpdateQuantity, 
+  calculateTotalPrice, 
+  calculateTotalItems 
+} from "@/stores/cartStore";
 
 const CartView = () => {
-  const { cartItems, loading, removeFromCart, updateQuantity, getTotalPrice, getTotalItems } = useCart();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { data: cartItems = [], isLoading } = useCartQuery();
+  const removeFromCartMutation = useRemoveFromCart();
+  const updateQuantityMutation = useUpdateQuantity();
 
-  if (loading) {
+  const handleRemoveFromCart = (cartItemId: string) => {
+    removeFromCartMutation.mutate(cartItemId);
+  };
+
+  const handleUpdateQuantity = (cartItemId: string, quantity: number) => {
+    updateQuantityMutation.mutate({ cartItemId, quantity });
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 p-4">
         <div className="max-w-4xl mx-auto">
@@ -31,7 +45,7 @@ const CartView = () => {
               <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
               <p className="text-gray-600 mb-4">Add some amazing products to get started!</p>
-              <Button onClick={() => navigate('/')} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={() => router.push('/')} className="bg-purple-600 hover:bg-purple-700">
                 Continue Shopping
               </Button>
             </CardContent>
@@ -47,7 +61,7 @@ const CartView = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              Shopping Cart ({getTotalItems()} items)
+              Shopping Cart ({calculateTotalItems(cartItems)} items)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -75,7 +89,8 @@ const CartView = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                      disabled={updateQuantityMutation.isPending}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -83,7 +98,8 @@ const CartView = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                      disabled={updateQuantityMutation.isPending}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -94,8 +110,9 @@ const CartView = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => handleRemoveFromCart(item.id)}
                       className="text-red-600 hover:text-red-700 mt-1"
+                      disabled={removeFromCartMutation.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -105,15 +122,15 @@ const CartView = () => {
               
               <div className="flex justify-between items-center pt-4 border-t">
                 <div className="text-xl font-bold">
-                  Total: ${getTotalPrice().toFixed(2)}
+                  Total: ${calculateTotalPrice(cartItems).toFixed(2)}
                 </div>
                 <div className="space-x-2">
-                  <Button variant="outline" onClick={() => navigate('/')}>
+                  <Button variant="outline" onClick={() => router.push('/')}>
                     Continue Shopping
                   </Button>
                   <Button 
                     className="bg-purple-600 hover:bg-purple-700"
-                    onClick={() => navigate('/checkout')}
+                    onClick={() => router.push('/checkout')}
                   >
                     Proceed to Checkout
                   </Button>

@@ -18,17 +18,20 @@ import {
 import { Product } from "./ProductCard";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useAddToCart } from "@/stores/cartStore";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (product: Product, quantity: number) => void;
 }
 
-const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalProps) => {
+const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
+  const addToCartMutation = useAddToCart();
+  const { toast } = useToast();
 
   if (!product) return null;
 
@@ -60,9 +63,35 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
   const tagsArray = parseTags(product.tags);
 
   const handleAddToCart = () => {
-    onAddToCart(product, quantity);
-    onClose();
-    setQuantity(1);
+    if (!product.inStock) {
+      toast({
+        title: "Out of Stock",
+        description: "This product is currently unavailable.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    addToCartMutation.mutate(
+      { product: product, quantity },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Added to Cart",
+            description: `${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart.`,
+          });
+          onClose();
+          setQuantity(1);
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: "Failed to add item to cart. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }
+    );
   };
 
   return (
@@ -335,13 +364,15 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart }: ProductModalPro
             {/* Enhanced Action Button */}
             <Button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.inStock || addToCartMutation.isPending}
               className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-300 font-semibold py-3 sm:py-4 lg:py-1.5 shadow-lg hover:shadow-xl rounded-lg border-0 text-sm sm:text-base lg:text-[10px]"
             >
               <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 lg:w-2.5 lg:h-2.5 mr-2 lg:mr-1" />
-              {product.inStock 
-                ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'} to Cart`
-                : 'Currently Out of Stock'
+              {addToCartMutation.isPending
+                ? 'Adding to Cart...'
+                : product.inStock 
+                  ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'} to Cart`
+                  : 'Currently Out of Stock'
               }
             </Button>
           </div>

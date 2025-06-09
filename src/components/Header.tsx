@@ -2,9 +2,10 @@ import { useState } from "react";
 import { ShoppingCart, Mic, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchBar from "./SearchBar";
+import { useRouter } from "next/navigation";
+import { useCartQuery, calculateTotalItems } from "@/stores/cartStore";
 
 interface HeaderProps {
-  cartItemCount: number;
   onSearchChange: (query: string) => void;
   onVoiceActivate: () => void;
   searchData?: any[];
@@ -14,7 +15,6 @@ interface HeaderProps {
 }
 
 const Header = ({ 
-  cartItemCount, 
   onSearchChange, 
   onVoiceActivate,
   searchData = [],
@@ -23,6 +23,16 @@ const Header = ({
   onSearchResultSelect
 }: HeaderProps) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const router = useRouter();
+  const { data: cartItems = [], isLoading: cartLoading, error: cartError } = useCartQuery();
+  const cartItemCount = calculateTotalItems(cartItems);
+
+  // Debug logging
+  console.log('Cart Debug:', { cartItems, cartItemCount, cartLoading, cartError });
+
+  const handleCartClick = () => {
+    router.push('/cart');
+  };
 
   return (
     <>
@@ -31,7 +41,7 @@ const Header = ({
           {/* Main Header Row */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 RAG Marketplace
               </h1>
@@ -77,19 +87,35 @@ const Header = ({
                 <span className="hidden sm:inline">Voice</span>
               </Button>
               
-              {/* Cart Button */}
-              <Button variant="outline" size="sm" className="relative">
+              {/* Cart Button with Debug Info */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="relative hover:bg-purple-50 hover:border-purple-300 transition-colors"
+                onClick={handleCartClick}
+                title={`Cart items: ${cartItemCount} | Loading: ${cartLoading} | Error: ${cartError ? 'Yes' : 'No'}`}
+              >
                 <ShoppingCart className="h-4 w-4" />
-                <span className="hidden sm:inline ml-2">Cart</span>
+                <span className="hidden sm:inline ml-2">
+                  Cart {cartLoading ? '(...)' : `(${cartItemCount})`}
+                </span>
+                <span className="sm:hidden text-xs ml-1">
+                  {cartLoading ? '(...)' : `(${cartItemCount})`}
+                </span>
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[1.25rem]">
+                  <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[1.25rem] animate-pulse shadow-lg border-2 border-white">
                     {cartItemCount > 99 ? '99+' : cartItemCount}
+                  </span>
+                )}
+                {cartError && (
+                  <span className="absolute -top-1 -left-1 bg-red-500 text-white text-xs rounded-full h-3 w-3 flex items-center justify-center">
+                    !
                   </span>
                 )}
               </Button>
               
               {/* User Button */}
-              <Button variant="outline" size="sm" className="hidden sm:flex">
+              <Button variant="outline" size="sm" className="hidden sm:flex hover:bg-purple-50 hover:border-purple-300 transition-colors">
                 <User className="h-4 w-4" />
                 <span className="hidden lg:inline ml-2">Account</span>
               </Button>

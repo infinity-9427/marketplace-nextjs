@@ -7,6 +7,7 @@ import ProductModal from "@/components/ProductModal";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import { Product } from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
+import { useCartQuery, useAddToCart, calculateTotalItems } from "@/stores/cartStore";
 
 const page = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,12 +17,15 @@ const page = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Use cart store
+  const { data: cartItems = [], isLoading: cartLoading } = useCartQuery();
+  const addToCartMutation = useAddToCart();
+
   // Fetch products from Supabase
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const { data: products } = await supabase.from('products').select();
-        console.log(JSON.stringify(products, null, 2), "products from supabase");
         
         if (products) {
           setProducts(products);
@@ -52,9 +56,8 @@ const page = () => {
     }
   };
 
-  const handleAddToCart = (product: Product) => {
-    console.log("Adding to cart:", product);
-    // This would integrate with your cart system
+  const handleAddToCart = (product: Product, quantity: number = 1) => {
+    addToCartMutation.mutate({ product, quantity });
   };
 
   const handleVoiceToggle = () => {
@@ -72,7 +75,7 @@ const page = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
       <Header
-        cartItemCount={0}
+        cartItemCount={calculateTotalItems(cartItems)}
         onSearchChange={handleSearchChange}
         onVoiceActivate={handleVoiceToggle}
       />
@@ -94,7 +97,7 @@ const page = () => {
             <ProductCard
               key={product.id}
               product={product}
-              onAddToCart={handleAddToCart}
+              onAddToCart={(product) => handleAddToCart(product, 1)}
               onProductClick={setSelectedProduct}
             />
           ))}
