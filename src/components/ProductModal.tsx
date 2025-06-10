@@ -8,18 +8,15 @@ import {
   Plus, 
   X, 
   ShoppingCart, 
-  Star,
   CheckCircle,
-  Truck,
-  Shield,
-  RotateCcw,
   Info
 } from "lucide-react";
 import { Product } from "./ProductCard";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useAddToCart } from "@/stores/cartStore";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+
 
 interface ProductModalProps {
   product: Product | null;
@@ -31,7 +28,6 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const addToCartMutation = useAddToCart();
-  const { toast } = useToast();
 
   if (!product) return null;
 
@@ -64,10 +60,18 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
 
   const handleAddToCart = () => {
     if (!product.inStock) {
-      toast({
-        title: "Out of Stock",
-        description: "This product is currently unavailable.",
-        variant: "destructive"
+      toast.error("This product is currently unavailable.", {
+        position: "top-right",
+        style: {
+          background: "#ef4444",
+          color: "#ffffff",
+          border: "1px solid #dc2626",
+          fontSize: "14px",
+          fontWeight: "500",
+          borderRadius: "8px",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+        },
+        duration: 3000,
       });
       return;
     }
@@ -76,18 +80,35 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       { product: product, quantity },
       {
         onSuccess: () => {
-          toast({
-            title: "Added to Cart",
-            description: `${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart.`,
+          toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart.`, {
+            position: "top-right",
+            style: {
+              background: "#1a6600", // Green color
+              color: "#ffffff", // White text
+              border: "1px solid #1a6600", // Darker green border
+              fontSize: "14px",
+              fontWeight: "500",
+              borderRadius: "8px",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+            },
+            duration: 3000,
           });
           onClose();
           setQuantity(1);
         },
         onError: (error) => {
-          toast({
-            title: "Error",
-            description: "Failed to add item to cart. Please try again.",
-            variant: "destructive"
+          toast.error("Failed to add item to cart. Please try again.", {
+            position: "top-right",
+            style: {
+              background: "#ef4444",
+              color: "#ffffff",
+              border: "1px solid #dc2626",
+              fontSize: "14px",
+              fontWeight: "500",
+              borderRadius: "8px",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+            },
+            duration: 3000,
           });
         }
       }

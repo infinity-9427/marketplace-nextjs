@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, StarHalf } from "lucide-react";
 import { useAddToCart } from "@/stores/cartStore";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -56,20 +55,62 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
     try {
       await addToCartMutation.mutateAsync(
         { product: product, quantity: 1 },
-        {
-          onSuccess: () => {
-            console.log('Successfully added to cart'); // Debug log
-            toast.success(`${product.name} has been added to your cart.`);
-          },
+      {
+        onSuccess: () => {
+          console.log('Successfully added to cart'); // Debug log
+          toast.success(`Successfully added to cart`, {
+            position: "top-right",
+            style: {
+              background: "#1a6600", // Blue background
+              color: "#ffffff",
+              border: "1px solid #1a6690",
+              fontSize: "13px",
+              fontWeight: "500",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              minHeight: "auto",
+              height: "auto"
+            },
+            duration: 2000,
+          });
+        },
           onError: (error) => {
             console.error('Failed to add to cart:', error); // Debug log
-            toast.error("Failed to add item to cart. Please try again.");
+            toast.error("Failed to add to cart", {
+              position: "top-right",
+              style: {
+                background: "#EF4444",
+                color: "#ffffff",
+                border: "1px solid #DC2626",
+                fontSize: "13px",
+                fontWeight: "500",
+                borderRadius: "8px",
+                padding: "8px 12px",
+                minHeight: "auto",
+                height: "auto"
+              },
+              duration: 2000,
+            });
           }
         }
       );
     } catch (error) {
       console.error('Cart mutation error:', error);
-      toast.error("Failed to add item to cart. Please try again.");
+      toast.error("Failed to add to cart", {
+        position: "top-right",
+        style: {
+          background: "#EF4444",
+          color: "#ffffff", 
+          border: "1px solid #DC2626",
+          fontSize: "13px",
+          fontWeight: "500",
+          borderRadius: "8px",
+          padding: "8px 12px",
+          minHeight: "auto",
+          height: "auto"
+        },
+        duration: 2000,
+      });
     }
   };
 

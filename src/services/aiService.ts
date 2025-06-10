@@ -1,4 +1,5 @@
 import { Product } from "@/components/ProductCard";
+import { toast } from "sonner";
 
 export class AIService {
   private products: Product[];
@@ -41,19 +42,69 @@ private async queryRAGBackend(query: string): Promise<string | null> {
       signal: AbortSignal.timeout(10000), // 10 second timeout
     });
     
-    if (!response.ok) {
+    // Handle different status codes
+    if (response.status === 400) {
+      toast.error("Invalid request. Please rephrase your question.", {
+        position: "top-right",
+        style: {
+          background: '#F59E0B',
+          color: 'white',
+          border: '1px solid #D97706'
+        }
+      });
+      throw new Error(`Bad request: ${response.status}`);
+    }
+    
+    if (response.status === 500) {
+      toast.error("We're experiencing server issues. Please try again later.", {
+        position: "top-right",
+        style: {
+          background: '#DC2626',
+          color: 'white',
+          border: '1px solid #B91C1C'
+        }
+      });
+      throw new Error(`Server error: ${response.status}`);
+    }
+    
+    if (response.status >= 400) {
+      toast.error("Service temporarily unavailable. Switching to offline mode.");
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (data.status === 'error') {
+      toast.error("Unable to process your request. Please try again.");
       throw new Error(data.error);
     }
     
     return data.answer || null;
     
   } catch (error) {
+    // Handle timeout errors specifically
+    if (error instanceof Error && error.message.includes('signal timed out')) {
+      toast.error("We're experiencing server issues. Please try again later.", {
+        position: "top-right",
+        style: {
+          background: '#DC2626',
+          color: 'white',
+          border: '1px solid #B91C1C'
+        }
+      });
+    }
+    // Only show toast for non-network errors if not already shown
+    else if (error instanceof TypeError && error.message.includes('fetch')) {
+      toast.error("We're experiencing server issues. Please try again later.", {
+        position: "top-right",
+        style: {
+          background: '#DC2626',
+          color: 'white',
+          border: '1px solid #B91C1C'
+        }
+      });
+    }
+    
     console.error('RAG backend error:', error);
     return null; // Return null to trigger fallback
   }
@@ -134,13 +185,10 @@ private async queryRAGBackend(query: string): Promise<string | null> {
     );
 
     if (matchingProducts.length === 0) {
-      return "I couldn't find any products matching your search. Could you try a different keyword or let me know what category you're interested in? We have electronics, wearables, furniture, gaming, kitchen, smart home, and accessories.";
+      return "We're experiencing issues. Please, try later again.";
     }
 
-    if (matchingProducts.length === 1) {
-      const product = matchingProducts[0];
-      return `I found the ${product.name} for $${product.price}. ${product.description} It has a ${product.rating} star rating from ${product.reviews} reviews. ${product.inStock ? 'It\'s currently in stock.' : 'Unfortunately, it\'s currently out of stock.'} Would you like to know more about this product?`;
-    }
+    
 
     const productList = matchingProducts.slice(0, 3).map(p => `${p.name} for $${p.price}`).join(', ');
     return `I found ${matchingProducts.length} products that match your search. Here are the top options: ${productList}. Would you like me to tell you more about any of these?`;
@@ -175,21 +223,6 @@ private async queryRAGBackend(query: string): Promise<string | null> {
     return `Our products range from $39.99 to $449.99. We have ${summary}. What's your budget range, and what type of product are you looking for?`;
   }
 
-  private handleRecommendations(query: string): string {
-    const highRatedProducts = this.products
-      .filter(p => p.rating >= 4.6 && p.inStock)
-      .slice(0, 3);
-
-    if (highRatedProducts.length === 0) {
-      return "I'd recommend checking out our most popular categories: electronics and gaming accessories. What type of product interests you most?";
-    }
-
-    const recommendations = highRatedProducts
-      .map(p => `${p.name} (${p.rating} stars, $${p.price})`)
-      .join(', ');
-
-    return `I recommend these highly-rated products: ${recommendations}. These all have excellent customer reviews and are currently in stock. Would you like more details about any of these?`;
-  }
 
   private handleStockInquiry(query: string): string {
     const inStockCount = this.products.filter(p => p.inStock).length;
