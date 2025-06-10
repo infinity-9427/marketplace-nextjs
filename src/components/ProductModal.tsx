@@ -96,7 +96,17 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[100vw] max-h-[100vh] w-full h-full md:max-w-[85vw] md:max-h-[85vh] lg:max-w-4xl xl:max-w-5xl md:w-auto md:h-auto p-0 overflow-hidden bg-white m-0 md:m-4 rounded-none md:rounded-lg shadow-xl border-0 md:border">
+      <DialogContent
+        className="
+          max-w-[100vw] max-h-[100vh] w-full h-full
+          md:max-w-[85vw] md:max-h-[85vh]
+          lg:max-w-3xl xl:max-w-4xl
+          md:w-auto md:h-auto
+          p-0 overflow-hidden
+          bg-white m-0 md:m-4
+          rounded-none md:rounded-lg shadow-xl border-0 md:border
+        "
+      >
         
         {/* Compact Header */}
         <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-3 sm:px-4 lg:px-3 py-2 lg:py-2">
@@ -143,69 +153,48 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
         
         {/* Main Content with proper scrolling */}
         <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col lg:grid lg:grid-cols-12 min-h-0">
+          <div className="flex flex-col lg:grid lg:grid-cols-12 h-full lg:max-h-[75vh]">
             
-            {/* Image Section - Enhanced height for better visibility */}
-            <div className="lg:col-span-8 relative">
-              {/* Main Image with enhanced height */}
-              <div className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[65vh] xl:h-[70vh] w-full">
-                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 sm:p-6 lg:p-4">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain max-w-full max-h-full"
-                    height={500}
-                    width={500}
-                  />
-                  
-                  {/* Compact Discount Badge */}
-                  {discountPercentage > 0 && (
-                    <div className="absolute top-3 sm:top-4 lg:top-2 left-3 sm:left-4 lg:left-2">
-                      <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold px-2.5 sm:px-3 lg:px-2 py-1 sm:py-1.5 lg:py-0.5 shadow-lg border-0 text-xs sm:text-sm lg:text-[10px]">
-                        -{discountPercentage}%
-                      </Badge>
-                    </div>
+            {/* Image Section - remove fixed heights and let the image fill space */}
+            <div className="lg:col-span-8 relative flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 lg:h-full">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                style={{ objectFit: 'contain' }}
+                className="object-contain"
+              />
+              
+              {/* Compact Discount Badge */}
+              {discountPercentage > 0 && (
+                <div className="absolute top-3 sm:top-4 lg:top-2 left-3 sm:left-4 lg:left-2">
+                  <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold px-2.5 sm:px-3 lg:px-2 py-1 sm:py-1.5 lg:py-0.5 shadow-lg border-0 text-xs sm:text-sm lg:text-[10px]">
+                    -{discountPercentage}%
+                  </Badge>
+                </div>
+              )}
+
+              {/* Compact Stock Status */}
+              <div className="absolute top-3 sm:top-4 lg:top-2 right-3 sm:right-4 lg:right-2">
+                <Badge 
+                  className={cn(
+                    "font-medium px-2.5 sm:px-3 lg:px-2 py-1 sm:py-1.5 lg:py-0.5 shadow-md border-0 text-xs sm:text-sm lg:text-[10px]",
+                    product.inStock 
+                      ? "bg-green-500 text-white" 
+                      : "bg-red-500 text-white"
                   )}
-
-                  {/* Compact Stock Status */}
-                  <div className="absolute top-3 sm:top-4 lg:top-2 right-3 sm:right-4 lg:right-2">
-                    <Badge 
-                      className={cn(
-                        "font-medium px-2.5 sm:px-3 lg:px-2 py-1 sm:py-1.5 lg:py-0.5 shadow-md border-0 text-xs sm:text-sm lg:text-[10px]",
-                        product.inStock 
-                          ? "bg-green-500 text-white" 
-                          : "bg-red-500 text-white"
-                      )}
-                    >
-                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-2.5 lg:h-2.5 mr-1 sm:mr-1.5 lg:mr-1" />
-                      {product.inStock ? 'In Stock' : 'Out of Stock'}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Badges - More compact for desktop */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-1 p-3 sm:p-4 lg:p-2 bg-gray-50/50">
-                <div className="flex flex-col items-center text-center p-2 sm:p-3 lg:p-1.5 bg-green-50 rounded-lg border border-green-200 shadow-sm">
-                  <Truck className="w-4 h-4 sm:w-5 sm:h-5 lg:w-3 lg:h-3 text-green-600 mb-1 sm:mb-2 lg:mb-0.5" />
-                  <span className="text-xs sm:text-sm lg:text-[9px] font-medium text-green-700">Free Ship</span>
-                </div>
-                <div className="flex flex-col items-center text-center p-2 sm:p-3 lg:p-1.5 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-3 lg:h-3 text-blue-600 mb-1 sm:mb-2 lg:mb-0.5" />
-                  <span className="text-xs sm:text-sm lg:text-[9px] font-medium text-blue-700">Warranty</span>
-                </div>
-                <div className="flex flex-col items-center text-center p-2 sm:p-3 lg:p-1.5 bg-orange-50 rounded-lg border border-orange-200 shadow-sm">
-                  <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 lg:w-3 lg:h-3 text-orange-600 mb-1 sm:mb-2 lg:mb-0.5" />
-                  <span className="text-xs sm:text-sm lg:text-[9px] font-medium text-orange-700">Returns</span>
-                </div>
+                >
+                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-2.5 lg:h-2.5 mr-1 sm:mr-1.5 lg:mr-1" />
+                  {product.inStock ? 'In Stock' : 'Out of Stock'}
+                </Badge>
               </div>
             </div>
             
-            {/* Product Details Section - More compact for desktop */}
-            <div className="lg:col-span-4 p-3 sm:p-4 lg:p-2 space-y-4 sm:space-y-6 lg:space-y-2 bg-white">
+            {/* Product Details Section */}
+            <div className="lg:col-span-4 p-2 sm:p-3 lg:p-1.5 bg-white h-full flex flex-col lg:overflow-y-auto">
               
               {/* Compact Price Section */}
-              <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl p-4 sm:p-6 lg:p-2 text-white shadow-lg">
+              <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl p-3 sm:p-4 lg:p-1.5 text-white shadow-lg">
                 <div className="space-y-2 sm:space-y-3 lg:space-y-1">
                   <div className="flex items-baseline gap-2 sm:gap-3 lg:gap-1.5">
                     <span className="text-2xl sm:text-3xl lg:text-lg xl:text-xl font-bold">
@@ -228,14 +217,17 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
               </div>
 
               {/* Enhanced Tabs Section */}
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-2">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col lg:overflow-y-hidden">
                 <TabsList className="grid w-full grid-cols-3 bg-gray-100 rounded-lg p-1 lg:p-0.5">
                   <TabsTrigger value="overview" className="rounded-md text-xs sm:text-sm lg:text-[9px] font-medium py-2 sm:py-2.5 lg:py-1">Info</TabsTrigger>
                   <TabsTrigger value="specs" className="rounded-md text-xs sm:text-sm lg:text-[9px] font-medium py-2 sm:py-2.5 lg:py-1">Specs</TabsTrigger>
                   <TabsTrigger value="features" className="rounded-md text-xs sm:text-sm lg:text-[9px] font-medium py-2 sm:py-2.5 lg:py-1">Features</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="overview" className="space-y-4 lg:space-y-1.5 mt-4 lg:mt-1.5">
+                <TabsContent
+                  value="overview"
+                  className="flex-1 overflow-y-auto lg:overflow-auto"
+                >
                   <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-2 border border-gray-200 shadow-sm">
                     <h4 className="text-base sm:text-lg lg:text-xs font-semibold text-gray-900 mb-3 sm:mb-4 lg:mb-1.5 flex items-center gap-2 lg:gap-1">
                       <Info className="w-4 h-4 sm:w-5 sm:h-5 lg:w-2.5 lg:h-2.5 text-purple-600" />
@@ -268,7 +260,10 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                   )}
                 </TabsContent>
 
-                <TabsContent value="specs" className="space-y-4 lg:space-y-1.5 mt-4 lg:mt-1.5">
+                <TabsContent
+                  value="specs"
+                  className="flex-1 overflow-y-auto lg:overflow-auto"
+                >
                   {product.specifications && Object.keys(product.specifications).length > 0 ? (
                     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                       <div className="max-h-64 sm:max-h-80 lg:max-h-44 xl:max-h-52 overflow-y-auto">
@@ -295,7 +290,10 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                   )}
                 </TabsContent>
 
-                <TabsContent value="features" className="mt-4 lg:mt-1.5">
+                <TabsContent
+                  value="features"
+                  className="flex-1 overflow-y-auto lg:overflow-auto"
+                >
                   {featuresArray?.length > 0 ? (
                     <div className="space-y-2 sm:space-y-3 lg:space-y-1 max-h-64 sm:max-h-80 lg:max-h-44 xl:max-h-52 overflow-y-auto">
                       {featuresArray.map((feature, index) => (
@@ -365,14 +363,30 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
             <Button
               onClick={handleAddToCart}
               disabled={!product.inStock || addToCartMutation.isPending}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-300 font-semibold py-3 sm:py-4 lg:py-1.5 shadow-lg hover:shadow-xl rounded-lg border-0 text-sm sm:text-base lg:text-[10px]"
+              className="
+                w-full bg-gradient-to-r from-purple-600 to-indigo-600
+                hover:from-purple-700 hover:to-indigo-700
+                disabled:from-gray-400 disabled:to-gray-500
+                transition-all duration-300 font-semibold
+                py-3 sm:py-4 
+                lg:py-1 xl:py-1.5  /* Dramatically reduced for desktop/laptop */
+                shadow-lg hover:shadow-xl rounded-lg border-0
+                text-sm sm:text-base 
+                lg:text-[10px] xl:text-xs  /* Smaller text for desktop/laptop */
+              "
             >
-              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 lg:w-2.5 lg:h-2.5 mr-2 lg:mr-1" />
+              <ShoppingCart 
+                className="
+                  w-4 h-4 sm:w-5 sm:h-5 
+                  lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5
+                  mr-2 lg:mr-1
+                " 
+              />
               {addToCartMutation.isPending
-                ? 'Adding to Cart...'
+                ? 'Adding...'  // Shortened text for desktop
                 : product.inStock 
-                  ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'} to Cart`
-                  : 'Currently Out of Stock'
+                  ? `Add ${quantity} ${quantity === 1 ? 'Item' : 'Items'}`  // Shortened for desktop
+                  : 'Out of Stock'  // Shortened text
               }
             </Button>
           </div>
