@@ -146,7 +146,7 @@ const VoiceAssistant = ({ isActive, onToggle, products }: VoiceAssistantProps) =
       // Welcome message when activated with delay to avoid interruption
       const welcomeTimer = setTimeout(async () => {
         if (isMountedRef.current && isActive) {
-          const welcomeMessage = "Hello! I'm your voice shopping assistant. You can ask me about products, prices, or recommendations. Take your time speaking - I'll automatically process your question after you pause. How can I help you today?";
+          const welcomeMessage = "Hello! I'm your smart shopping assistant, here to help you find the best products, deals, and recommendations. You can ask me anything — just speak naturally, and I'll respond as soon as you pause. Ready to shop smarter?";
           await handleAIResponse(welcomeMessage);
           addToHistory('assistant', welcomeMessage);
         }

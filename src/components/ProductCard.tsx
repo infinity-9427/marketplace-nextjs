@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, StarHalf } from "lucide-react";
 import { useAddToCart } from "@/stores/cartStore";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import Image from "next/image";
 
 export interface Product {
@@ -32,7 +32,6 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
   const addToCartMutation = useAddToCart();
-  const { toast } = useToast();
 
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -50,11 +49,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
     console.log('Adding to cart:', product.id); // Debug log
     
     if (!product.inStock) {
-      toast({
-        title: "Out of Stock",
-        description: "This product is currently unavailable.",
-        variant: "destructive"
-      });
+      toast.error("This product is currently unavailable.");
       return;
     }
 
@@ -64,28 +59,17 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
         {
           onSuccess: () => {
             console.log('Successfully added to cart'); // Debug log
-            toast({
-              title: "Added to Cart",
-              description: `${product.name} has been added to your cart.`,
-            });
+            toast.success(`${product.name} has been added to your cart.`);
           },
           onError: (error) => {
             console.error('Failed to add to cart:', error); // Debug log
-            toast({
-              title: "Error",
-              description: "Failed to add item to cart. Please try again.",
-              variant: "destructive"
-            });
+            toast.error("Failed to add item to cart. Please try again.");
           }
         }
       );
     } catch (error) {
       console.error('Cart mutation error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("Failed to add item to cart. Please try again.");
     }
   };
 
