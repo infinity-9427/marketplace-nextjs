@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -236,9 +235,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                   {addToCartMutation.isPending
                     ? "Adding to Cart..."
                     : product.inStock
-                    ? `Add ${quantity} to Cart - $${(
-                        product.price * quantity
-                      ).toFixed(2)}`
+                    ? `Add to Cart`
                     : "Out of Stock"}
                 </Button>
 

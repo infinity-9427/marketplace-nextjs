@@ -30,6 +30,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [quantity, setQuantity] = useState(1); // Added quantity state
   const addToCartMutation = useAddToCart();
 
   const discountPercentage = product.originalPrice 
@@ -45,7 +46,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    console.log('Adding to cart:', product.id); // Debug log
+    console.log('Adding to cart:', product.id, 'quantity:', quantity); // Updated debug log
     
     if (!product.inStock) {
       toast.error("This product is currently unavailable.");
@@ -54,10 +55,12 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
 
     try {
       await addToCartMutation.mutateAsync(
-        { product: product, quantity: 1 },
+        { product: product, quantity: quantity }, // Use the quantity state
       {
         onSuccess: () => {
-          toast.success("Item added to cart", {
+          toast.success(quantity === 1 
+            ? "Item added to cart" 
+            : `${quantity} items added to cart`, {
             style: {
               background: "#0f172a", // Blue background
               color: "#ffffff",
@@ -173,7 +176,47 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
           )}
         </div>
         
-        {/* Integrated button - no separate CardFooter */}
+        {/* Add quantity controls before the button */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-gray-700 mr-2">Qty:</span>
+            <div className="flex items-center border rounded-md">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuantity(Math.max(1, quantity - 1));
+                }}
+                disabled={!product.inStock}
+                className="px-1.5 py-0.5 text-sm hover:bg-gray-100 disabled:opacity-50"
+                aria-label="Decrease quantity"
+              >
+                -
+              </button>
+              <span
+                className="px-2 py-0.5 text-sm border-x"
+                aria-live="polite"
+              >
+                {quantity}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuantity(quantity + 1);
+                }}
+                disabled={!product.inStock}
+                className="px-1.5 py-0.5 text-sm hover:bg-gray-100 disabled:opacity-50"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <span className="text-sm text-gray-700 font-medium">
+            ${(product.price * quantity).toFixed(2)}
+          </span>
+        </div>
+        
+        {/* Updated button text to show quantity if more than 1 */}
         <Button
           onClick={handleAddToCart}
           disabled={!product.inStock || addToCartMutation.isPending}
@@ -182,7 +225,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
           {addToCartMutation.isPending 
             ? 'Adding...' 
             : product.inStock 
-              ? 'Add to Cart' 
+              ?  'Add to Cart'
               : 'Out of Stock'
           }
         </Button>

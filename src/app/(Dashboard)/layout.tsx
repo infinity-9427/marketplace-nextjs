@@ -6,10 +6,10 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Auth",
-  description: "Login | Registration",
+  title: "Dashboard",
+  description: "Dashboard",
   icons: {
-    icon: "/auth.svg",
+    icon: "/chart.svg",
   }
 };
 
