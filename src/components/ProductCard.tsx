@@ -37,7 +37,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  const defaultImage = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=300&fit=crop&crop=center";
+  const defaultImage = "/noImage.webp"; 
 
   const handleImageError = () => {
     setImageError(true);

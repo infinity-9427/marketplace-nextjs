@@ -3,12 +3,12 @@ import { toast } from "sonner";
 
 export class AIService {
   private products: Product[];
-  private baseUrl: string;
+  private baseUrl: string | undefined;
   private useRAG: boolean;
 
   constructor(products: Product[]) {
     this.products = products;
-    this.baseUrl = process.env.BASE_URL || 'http://localhost:3000'; 
+    this.baseUrl = process.env.NEXT_PUBLIC_BASE_URL; 
     this.useRAG = true; // Set to false to use local processing as fallback
   }
 

@@ -46,8 +46,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     : [];
 
   const defaultImage =
-    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=300&fit=crop&crop=center";
-
+    "/noImage.webp"
   const handleImageError = () => {
     setImageError(true);
   };
