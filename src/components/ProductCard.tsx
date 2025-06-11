@@ -57,7 +57,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
         { product: product, quantity: 1 },
       {
         onSuccess: () => {
-          toast.success(`Item added to cart`, {
+          toast.success("Item added to cart", {
             style: {
               background: "#0f172a", // Blue background
               color: "#ffffff",
