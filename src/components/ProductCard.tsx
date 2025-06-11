@@ -57,21 +57,11 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
         { product: product, quantity: 1 },
       {
         onSuccess: () => {
-          console.log('Successfully added to cart'); // Debug log
-          toast.success(`Successfully added to cart`, {
-            position: "top-right",
+          toast.success(`Item added to cart`, {
             style: {
-              background: "#1a6600", // Blue background
+              background: "#0f172a", // Blue background
               color: "#ffffff",
-              border: "1px solid #1a6690",
-              fontSize: "13px",
-              fontWeight: "500",
-              borderRadius: "8px",
-              padding: "8px 12px",
-              minHeight: "auto",
-              height: "auto"
-            },
-            duration: 2000,
+            }
           });
         },
           onError: (error) => {

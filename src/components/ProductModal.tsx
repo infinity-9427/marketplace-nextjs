@@ -80,18 +80,11 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       { product: product, quantity },
       {
         onSuccess: () => {
-          toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to your cart.`, {
-            position: "top-right",
-            style: {
-              background: "#1a6600", // Green color
-              color: "#ffffff", // White text
-              border: "1px solid #1a6600", // Darker green border
-              fontSize: "14px",
-              fontWeight: "500",
-              borderRadius: "8px",
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
-            },
-            duration: 3000,
+          toast.success(`Item added to cart`, {
+           style: {
+              background: "#0f172a", // Blue background
+              color: "#ffffff",
+            }
           });
           onClose();
           setQuantity(1);

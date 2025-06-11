@@ -46,13 +46,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster
-          position="top-center"
-          expand={false}
-          richColors
-          closeButton
-          theme="light"
-        />
+        <Toaster 
+          position="top-right"
+          richColors 
+          theme="light" />
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

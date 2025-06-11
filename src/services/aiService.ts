@@ -8,7 +8,7 @@ export class AIService {
 
   constructor(products: Product[]) {
     this.products = products;
-    this.baseUrl = 'http://localhost:5000';
+    this.baseUrl = process.env.BASE_URL || 'http://localhost:3000'; 
     this.useRAG = true; // Set to false to use local processing as fallback
   }
 
