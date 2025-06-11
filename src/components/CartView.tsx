@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Minus, Plus, Trash2, ShoppingBag, CreditCard, 
-  Clock, Truck, BadgePercent, AlertCircle 
+  Minus, Plus, Trash2, ShoppingBag, CreditCard, ArrowLeft
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { 
@@ -26,14 +24,11 @@ const CartView = () => {
   const removeFromCartMutation = useRemoveFromCart();
   const updateQuantityMutation = useUpdateQuantity();
   
-  const [promoCode, setPromoCode] = useState("");
-  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   
   const subtotal = calculateTotalPrice(cartItems);
-  const tax = subtotal * 0.08; // Assuming 8% tax
   const shipping = subtotal > 100 ? 0 : 9.99; // Free shipping over $100
-  const total = subtotal + tax + shipping;
+  const total = subtotal + shipping;
 
   const handleImageError = (itemId: string) => {
     setImageErrors(prev => ({ ...prev, [itemId]: true }));
@@ -41,42 +36,47 @@ const CartView = () => {
 
   const handleRemoveFromCart = (cartItemId: string) => {
     removeFromCartMutation.mutate(cartItemId, {
-      onSuccess: () => {
+      onError: (error) => {
         toast({
-          title: "Item removed",
-          description: "The item has been removed from your cart",
+          title: "Error",
+          description: "Failed to remove item from cart",
+          variant: "destructive",
         });
       }
     });
   };
 
   const handleUpdateQuantity = (cartItemId: string, quantity: number) => {
-    if (quantity < 1) return;
-    updateQuantityMutation.mutate({ cartItemId, quantity });
+    if (quantity < 1) {
+      handleRemoveFromCart(cartItemId);
+      return;
+    }
+    
+    updateQuantityMutation.mutate({ cartItemId, quantity }, {
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: "Failed to update quantity",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
-  const handleApplyPromoCode = () => {
-    setIsApplyingPromo(true);
-    setTimeout(() => {
-      setIsApplyingPromo(false);
-      toast({
-        title: "Invalid promo code",
-        description: "The promo code you entered is invalid or expired",
-        variant: "destructive",
-      });
-    }, 1500);
+  const handleDecreaseQuantity = (cartItemId: string, currentQuantity: number) => {
+    handleUpdateQuantity(cartItemId, currentQuantity - 1);
+  };
+
+  const handleIncreaseQuantity = (cartItemId: string, currentQuantity: number) => {
+    handleUpdateQuantity(cartItemId, currentQuantity + 1);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center py-12">
-            <div className="flex flex-col items-center space-y-4">
-              <ShoppingBag className="h-12 w-12 text-purple-500 animate-pulse" />
-              <h3 className="text-xl font-semibold text-gray-900">Loading your cart...</h3>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <ShoppingBag className="h-12 w-12 text-purple-500 animate-pulse mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900">Loading your cart...</h3>
         </div>
       </div>
     );
@@ -84,25 +84,23 @@ const CartView = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 p-4">
-        <div className="max-w-6xl mx-auto">
-          <Card className="text-center py-12 shadow-lg border-0">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <Card className="text-center py-12">
             <CardContent>
-              <div className="flex flex-col items-center">
-                <ShoppingBag className="h-20 w-20 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3">Your cart is empty</h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Looks like you haven't added anything to your cart yet. 
-                  Explore our products and find something you'll love!
-                </p>
-                <Button 
-                  onClick={() => router.push('/')} 
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 rounded-lg text-lg"
-                  size="lg"
-                >
-                  Start Shopping
-                </Button>
-              </div>
+              <ShoppingBag className="h-20 w-20 text-gray-400 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-gray-900 mb-3">Your cart is empty</h3>
+              <p className="text-gray-600 mb-6">
+                Discover amazing products and add them to your cart!
+              </p>
+              <Button 
+                onClick={() => router.push('/')} 
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3"
+                size="lg"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Continue Shopping
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -111,157 +109,144 @@ const CartView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left side - Cart items */}
-          <div className="lg:w-2/3">
-            <Card className="border-0 shadow-lg mb-6">
-              <CardHeader className="border-b bg-white rounded-t-lg">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl font-bold text-gray-900">
-                    Your Cart ({calculateTotalItems(cartItems)} items)
-                  </CardTitle>
-                  <Button variant="ghost" onClick={() => router.push('/')}>
-                    Continue Shopping
-                  </Button>
-                </div>
-              </CardHeader>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={() => router.push('/')}
+            className="mb-4 text-purple-600 hover:text-purple-700"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Continue Shopping
+          </Button>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Shopping Cart ({calculateTotalItems(cartItems)} {calculateTotalItems(cartItems) === 1 ? 'item' : 'items'})
+          </h1>
+        </div>
+
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-8">
+            <Card className="shadow-sm">
               <CardContent className="p-0">
-                {cartItems.map((item) => (
+                {cartItems.map((item, index) => (
                   <div 
                     key={item.id}
-                    className="p-4 border-b"
+                    className={`p-4 sm:p-6 ${index !== cartItems.length - 1 ? 'border-b' : ''}`}
                   >
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      {/* Product Image - Improved with Next/Image */}
-                      <Link href={`/product/${item.product.id}`} className="block relative w-full sm:w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg group">
-                        <div className="relative w-full h-full aspect-square overflow-hidden">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Product Image */}
+                      <div className="flex-shrink-0 w-full sm:w-24 h-24">
+                        <Link href={`/product/${item.product.id}`} className="block relative w-full h-full rounded-lg overflow-hidden group">
                           <Image
                             src={imageErrors[item.id] || !item.product.image ? 
-                              "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop" : 
+                              "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop" : 
                               item.product.image}
                             alt={item.product.name}
                             fill
                             sizes="(max-width: 640px) 100vw, 96px"
-                            className="object-cover transition-all duration-300 group-hover:scale-105"
+                            className="object-cover group-hover:scale-105 transition-transform duration-200"
                             onError={() => handleImageError(item.id)}
-                            loading="lazy"
-                            style={{ objectPosition: 'center' }}
                           />
-                        </div>
-                      </Link>
+                        </Link>
+                      </div>
                       
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <Link href={`/product/${item.product.id}`} className="hover:text-purple-700">
-                          <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{item.product.name}</h3>
-                        </Link>
-                        <div className="flex items-center text-sm text-gray-500 mt-1 space-x-3">
-                          {item.product.category && (
-                            <span className="capitalize">{item.product.category}</span>
-                          )}
-                          {item.product.size && (
-                            <>
-                              <span>•</span>
-                              <span>Size: {item.product.size}</span>
-                            </>
-                          )}
-                          {item.product.color && (
-                            <>
-                              <span>•</span>
-                              <span>Color: {item.product.color}</span>
-                            </>
-                          )}
+                        <div className="flex flex-col sm:flex-row sm:justify-between">
+                          <div className="flex-1">
+                            <Link href={`/product/${item.product.id}`} className="hover:text-purple-600">
+                              <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
+                            </Link>
+                            {item.product.category && (
+                              <p className="text-sm text-gray-500 mt-1 capitalize">{item.product.category}</p>
+                            )}
+                            <div className="flex items-center mt-2">
+                              <span className="text-lg font-bold text-purple-600">${item.product.price}</span>
+                              {item.product.originalPrice && (
+                                <>
+                                  <span className="text-sm text-gray-500 line-through ml-2">${item.product.originalPrice}</span>
+                                  <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded ml-2">
+                                    {Math.round((1 - item.product.price / item.product.originalPrice) * 100)}% OFF
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Desktop: Quantity and Total */}
+                          <div className="hidden sm:flex sm:flex-col sm:items-end sm:justify-between sm:ml-4">
+                            <div className="flex items-center border rounded-lg">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 rounded-r-none"
+                                onClick={() => handleDecreaseQuantity(item.id, item.quantity)}
+                                disabled={updateQuantityMutation.isPending}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-12 text-center text-sm font-medium">{item.quantity}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 rounded-l-none"
+                                onClick={() => handleIncreaseQuantity(item.id, item.quantity)}
+                                disabled={updateQuantityMutation.isPending}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <p className="text-lg font-semibold text-gray-900 mt-2">
+                              ${(item.product.price * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2 mt-2">
-                          <span className="text-lg font-bold text-purple-600">${item.product.price}</span>
-                          {item.product.originalPrice && (
-                            <span className="text-sm text-gray-500 line-through">${item.product.originalPrice}</span>
-                          )}
-                          {item.product.originalPrice && (
-                            <span className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                              {Math.round((1 - item.product.price / item.product.originalPrice) * 100)}% OFF
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Estimated delivery */}
-                        <div className="flex items-center mt-2 text-xs text-gray-600">
-                          <Truck className="h-3 w-3 mr-1" />
-                          <span>Free delivery by Tuesday, Jun 18</span>
-                        </div>
-
-                        {/* Mobile quantity controls */}
-                        <div className="mt-3 flex items-center justify-between sm:hidden">
-                          <div className="flex items-center border rounded-md overflow-hidden">
+                        
+                        {/* Mobile: Quantity and Actions */}
+                        <div className="flex items-center justify-between mt-4 sm:hidden">
+                          <div className="flex items-center border rounded-lg">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2 rounded-none"
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                              disabled={updateQuantityMutation.isPending || item.quantity <= 1}
+                              className="h-8 w-8 p-0 rounded-r-none"
+                              onClick={() => handleDecreaseQuantity(item.id, item.quantity)}
+                              disabled={updateQuantityMutation.isPending}
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
-                            <span className="w-8 text-center text-sm">{item.quantity}</span>
+                            <span className="w-12 text-center text-sm font-medium">{item.quantity}</span>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2 rounded-none"
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                              className="h-8 w-8 p-0 rounded-l-none"
+                              onClick={() => handleIncreaseQuantity(item.id, item.quantity)}
                               disabled={updateQuantityMutation.isPending}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
                           </div>
-                          <span className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</span>
+                          <p className="text-lg font-semibold text-gray-900">
+                            ${(item.product.price * item.quantity).toFixed(2)}
+                          </p>
                         </div>
-                      </div>
-                      
-                      {/* Quantity & Pricing - Desktop */}
-                      <div className="hidden sm:flex items-center space-x-2">
-                        <div className="flex items-center border rounded-md overflow-hidden">
+                        
+                        {/* Remove Button */}
+                        <div className="flex justify-end mt-3">
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-2 rounded-none"
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                            disabled={updateQuantityMutation.isPending || item.quantity <= 1}
+                            onClick={() => handleRemoveFromCart(item.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            disabled={removeFromCartMutation.isPending}
                           >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="w-8 text-center text-sm">{item.quantity}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 rounded-none"
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                            disabled={updateQuantityMutation.isPending}
-                          >
-                            <Plus className="h-3 w-3" />
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove
                           </Button>
                         </div>
                       </div>
-                      
-                      {/* Item Total - Desktop */}
-                      <div className="hidden sm:block text-right">
-                        <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Item Actions */}
-                    <div className="flex justify-end mt-3 gap-2 text-sm">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFromCart(item.id)}
-                        className="text-red-600 hover:text-red-700"
-                        disabled={removeFromCartMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
                     </div>
                   </div>
                 ))}
@@ -269,106 +254,52 @@ const CartView = () => {
             </Card>
           </div>
           
-          {/* Right side - Order Summary */}
-          <div className="lg:w-1/3">
-            <div className="sticky top-4">
-              <Card className="border-0 shadow-lg mb-4">
-                <CardHeader className="border-b">
-                  <CardTitle>Order Summary</CardTitle>
+          {/* Order Summary */}
+          <div className="lg:col-span-4 mt-8 lg:mt-0">
+            <div className="sticky top-6">
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl">Order Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 pt-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal ({calculateTotalItems(cartItems)} items)</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
                   
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
-                    {shipping > 0 ? 
-                      <span>${shipping.toFixed(2)}</span> : 
-                      <span className="text-green-600 font-medium">Free</span>
-                    }
+                    {shipping > 0 ? (
+                      <span className="font-medium">${shipping.toFixed(2)}</span>
+                    ) : (
+                      <span className="font-medium text-green-600">Free</span>
+                    )}
                   </div>
                   
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Estimated Tax</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
-                  
-                  {/* Promo code input */}
-                  <div className="pt-2">
-                    <p className="text-sm font-medium mb-2">Promo Code</p>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <BadgePercent className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="Enter code" 
-                          value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      <Button 
-                        onClick={handleApplyPromoCode} 
-                        disabled={!promoCode || isApplyingPromo}
-                        className="bg-purple-600 hover:bg-purple-700"
-                      >
-                        {isApplyingPromo ? "Applying..." : "Apply"}
-                      </Button>
+                  {subtotal < 100 && shipping > 0 && (
+                    <div className="text-sm text-purple-600 bg-purple-50 p-3 rounded-lg">
+                      Add ${(100 - subtotal).toFixed(2)} more for free shipping!
                     </div>
-                  </div>
+                  )}
                   
                   <Separator />
                   
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-lg font-semibold">Total</span>
-                    <span className="text-xl font-bold text-purple-600">${total.toFixed(2)}</span>
+                  <div className="flex justify-between items-center text-lg font-semibold">
+                    <span>Total</span>
+                    <span className="text-purple-600">${total.toFixed(2)}</span>
                   </div>
                   
                   <Button 
-                    className="w-full bg-purple-600 hover:bg-purple-700 py-6 text-lg"
+                    className="w-full bg-purple-600 hover:bg-purple-700 py-6 text-lg font-medium"
                     size="lg"
                     onClick={() => router.push('/checkout')}
                   >
-                    <CreditCard className="mr-2 h-5 w-5" /> Checkout
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    Proceed to Checkout
                   </Button>
                   
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-4">
-                    <Clock className="h-4 w-4" />
-                    <span>Estimated delivery: 2-4 business days</span>
-                  </div>
-                  
-                  <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 text-sm">
-                    <p className="font-medium text-purple-800 mb-1">Secure Checkout</p>
-                    <p className="text-purple-700 text-xs">
-                      We use industry-standard encryption to protect your personal information
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex gap-3 items-center">
-                      <Truck className="h-5 w-5 text-purple-600" />
-                      <div>
-                        <p className="font-medium text-sm">Free Shipping</p>
-                        <p className="text-xs text-gray-600">On orders over $100</p>
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="flex gap-3 items-center">
-                      <AlertCircle className="h-5 w-5 text-purple-600" />
-                      <div>
-                        <p className="font-medium text-sm">Need Help?</p>
-                        <p className="text-xs text-gray-600">
-                          <a href="#" className="text-purple-600 hover:underline">Contact us</a> or call (800) 123-4567
-                        </p>
-                      </div>
-                    </div>
+                  <div className="text-center text-sm text-gray-500 mt-4">
+                    Secure checkout with SSL encryption
                   </div>
                 </CardContent>
               </Card>
