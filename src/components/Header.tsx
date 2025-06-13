@@ -84,7 +84,7 @@ const Header = ({
                 className="flex items-center space-x-2 hover:bg-purple-50 hover:border-purple-300 transition-colors"
               >
                 <Mic className="h-4 w-4" />
-                <span className="hidden sm:inline">Voice</span>
+                <span className="hidden sm:inline">AI Voice Assistant</span>
               </Button>
               
               {/* Cart Button with Debug Info */}
