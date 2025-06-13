@@ -133,6 +133,7 @@ export const useRemoveFromCart = () => {
 
   return useMutation({
     mutationFn: async (cartItemId: string) => {
+      console.log('=== REMOVE OPERATION DEBUG ===');
       console.log('Remove operation started:', { cartItemId });
       
       // Extract product ID from cart item ID - handle both formats
@@ -143,38 +144,123 @@ export const useRemoveFromCart = () => {
         productId = cartItemId;
       }
       
-      console.log('Extracted productId:', { productId, originalId: cartItemId });
+      console.log('Extracted productId:', { productId, originalId: cartItemId, productIdType: typeof productId });
       
-      // Get current cart data from cache
+      // Get current cart data from BOTH cache locations
       const currentCart = queryClient.getQueryData<MemoryCartItem[]>(['cartItems']) || [];
+      const currentCartQuery = queryClient.getQueryData<CartItem[]>(['cart']) || [];
       
-      console.log('Current cart items:', currentCart.map(item => ({ 
+      console.log('Current cartItems cache:', currentCart);
+      console.log('Current cart query cache:', currentCartQuery);
+      console.log('CartItems length:', currentCart.length);
+      console.log('Cart query length:', currentCartQuery.length);
+      
+      if (currentCart.length === 0 && currentCartQuery.length === 0) {
+        console.error('Both caches are empty!');
+        throw new Error('Cart is empty');
+      }
+      
+      // If cartItems cache is empty but cart query has data, rebuild cartItems cache
+      if (currentCart.length === 0 && currentCartQuery.length > 0) {
+        console.log('Rebuilding cartItems cache from cart query cache...');
+        const rebuiltCartItems = currentCartQuery.map(item => ({
+          productId: item.product_id,
+          quantity: item.quantity,
+          addedAt: item.created_at,
+          product: item.product
+        }));
+        queryClient.setQueryData(['cartItems'], rebuiltCartItems);
+        
+        // Use the rebuilt data
+        const updatedCurrentCart = rebuiltCartItems;
+        
+        console.log('Rebuilt cartItems:', updatedCurrentCart);
+        
+        // Find the item to remove in rebuilt data - compare as strings
+        const itemToRemove = updatedCurrentCart.find(item => 
+          String(item.productId) === String(productId) || 
+          String(item.product.id) === String(productId)
+        );
+        
+        if (!itemToRemove) {
+          console.error('Remove operation failed - item not found after rebuild:', { 
+            cartItemId, 
+            productId, 
+            productIdType: typeof productId,
+            availableItems: updatedCurrentCart.map(item => ({ 
+              productId: item.productId, 
+              productIdType: typeof item.productId,
+              actualProductId: item.product.id,
+              actualProductIdType: typeof item.product.id,
+              name: item.product.name 
+            }))
+          });
+          throw new Error(`Item not found in cart (ID: ${productId})`);
+        }
+        
+        // Remove the item - use the found item's productId to ensure consistency
+        const updatedCart = updatedCurrentCart.filter(item => item !== itemToRemove);
+        
+        // Update both caches
+        queryClient.setQueryData(['cartItems'], updatedCart);
+        
+        const cartItems = updatedCart.map(item => ({
+          id: `memory_${item.productId}`,
+          product_id: item.productId,
+          quantity: item.quantity,
+          created_at: item.addedAt,
+          product: item.product
+        })) as CartItem[];
+        
+        queryClient.setQueryData(['cart'], cartItems);
+        
+        return { 
+          removedItem: itemToRemove,
+          removedProductName: itemToRemove.product.name
+        };
+      }
+      
+      console.log('Current cart items for removal check:', currentCart.map(item => ({ 
         productId: item.productId, 
+        productIdType: typeof item.productId,
+        actualProductId: item.product.id,
+        actualProductIdType: typeof item.product.id,
         name: item.product.name 
       })));
       
-      // Find the item to remove
-      const itemToRemove = currentCart.find(item => item.productId === productId);
+      // Find the item to remove - compare as strings and check both productId and product.id
+      const itemToRemove = currentCart.find(item => 
+        String(item.productId) === String(productId) || 
+        String(item.product.id) === String(productId)
+      );
       
       if (!itemToRemove) {
         console.error('Remove operation failed - item not found:', { 
           cartItemId, 
           productId, 
-          availableItems: currentCart.map(item => ({ id: item.productId, name: item.product.name }))
+          productIdType: typeof productId,
+          availableItems: currentCart.map(item => ({ 
+            productId: item.productId, 
+            productIdType: typeof item.productId,
+            actualProductId: item.product.id,
+            actualProductIdType: typeof item.product.id,
+            name: item.product.name 
+          }))
         });
         throw new Error(`Item not found in cart (ID: ${productId})`);
       }
       
       console.log('Item found for removal:', { 
         productId: itemToRemove.productId, 
+        actualProductId: itemToRemove.product.id,
         name: itemToRemove.product.name 
       });
       
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Remove the item from cart
-      const updatedCart = currentCart.filter(item => item.productId !== productId);
+      // Remove the item from cart - use the found item reference to ensure we remove the right one
+      const updatedCart = currentCart.filter(item => item !== itemToRemove);
       
       // Update cartItems cache
       queryClient.setQueryData(['cartItems'], updatedCart);
@@ -189,6 +275,8 @@ export const useRemoveFromCart = () => {
       })) as CartItem[];
       
       queryClient.setQueryData(['cart'], cartItems);
+      
+      console.log('=== REMOVE OPERATION COMPLETED ===');
       
       return { 
         removedItem: itemToRemove,
@@ -237,14 +325,109 @@ export const useUpdateQuantity = () => {
         throw new Error('Quantity cannot be negative');
       }
       
+      // Get current cart data from BOTH cache locations
       const currentCart = queryClient.getQueryData<MemoryCartItem[]>(['cartItems']) || [];
-      const existingItem = currentCart.find(item => item.productId === productId);
+      const currentCartQuery = queryClient.getQueryData<CartItem[]>(['cart']) || [];
+      
+      console.log('Current cartItems cache:', currentCart);
+      console.log('Current cart query cache:', currentCartQuery);
+      
+      if (currentCart.length === 0 && currentCartQuery.length === 0) {
+        console.error('Both caches are empty!');
+        throw new Error('Cart is empty');
+      }
+      
+      // If cartItems cache is empty but cart query has data, rebuild cartItems cache
+      if (currentCart.length === 0 && currentCartQuery.length > 0) {
+        console.log('Rebuilding cartItems cache for quantity update...');
+        const rebuiltCartItems = currentCartQuery.map(item => ({
+          productId: item.product_id,
+          quantity: item.quantity,
+          addedAt: item.created_at,
+          product: item.product
+        }));
+        queryClient.setQueryData(['cartItems'], rebuiltCartItems);
+        
+        // Find the item in rebuilt data
+        const existingItem = rebuiltCartItems.find(item => 
+          String(item.productId) === String(productId) || 
+          String(item.product.id) === String(productId)
+        );
+        
+        if (!existingItem) {
+          console.error('Update quantity failed - item not found after rebuild:', { 
+            cartItemId, 
+            productId, 
+            productIdType: typeof productId,
+            availableItems: rebuiltCartItems.map(item => ({ 
+              productId: item.productId, 
+              productIdType: typeof item.productId,
+              actualProductId: item.product.id,
+              actualProductIdType: typeof item.product.id,
+              name: item.product.name 
+            }))
+          });
+          throw new Error(`Item not found in cart (ID: ${productId})`);
+        }
+        
+        const previousQuantity = existingItem.quantity;
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        let updatedCart: MemoryCartItem[];
+        
+        if (quantity <= 0) {
+          // Remove item if quantity is 0 or less
+          updatedCart = rebuiltCartItems.filter(item => item !== existingItem);
+        } else {
+          // Update quantity
+          updatedCart = rebuiltCartItems.map(item => 
+            item === existingItem 
+              ? { ...item, quantity }
+              : item
+          );
+        }
+        
+        // Update both caches
+        queryClient.setQueryData(['cartItems'], updatedCart);
+        
+        const cartItems = updatedCart.map(item => ({
+          id: `memory_${item.productId}`,
+          product_id: item.productId,
+          quantity: item.quantity,
+          created_at: item.addedAt,
+          product: item.product
+        })) as CartItem[];
+        
+        queryClient.setQueryData(['cart'], cartItems);
+        
+        return { 
+          previousQuantity, 
+          newQuantity: quantity, 
+          wasRemoved: quantity <= 0,
+          productName: existingItem.product.name
+        };
+      }
+      
+      // Find the item in current cart - compare as strings and check both productId and product.id
+      const existingItem = currentCart.find(item => 
+        String(item.productId) === String(productId) || 
+        String(item.product.id) === String(productId)
+      );
       
       if (!existingItem) {
         console.error('Update quantity failed - item not found:', { 
           cartItemId, 
           productId, 
-          availableItems: currentCart.map(item => ({ id: item.productId, name: item.product.name }))
+          productIdType: typeof productId,
+          availableItems: currentCart.map(item => ({ 
+            productId: item.productId, 
+            productIdType: typeof item.productId,
+            actualProductId: item.product.id,
+            actualProductIdType: typeof item.product.id,
+            name: item.product.name 
+          }))
         });
         throw new Error(`Item not found in cart (ID: ${productId})`);
       }
@@ -263,12 +446,12 @@ export const useUpdateQuantity = () => {
       const previousQuantity = existingItem.quantity;
       
       if (quantity <= 0) {
-        // Remove item if quantity is 0 or less
-        updatedCart = currentCart.filter(item => item.productId !== productId);
+        // Remove item if quantity is 0 or less - use reference equality
+        updatedCart = currentCart.filter(item => item !== existingItem);
       } else {
-        // Update quantity
+        // Update quantity - use reference equality
         updatedCart = currentCart.map(item => 
-          item.productId === productId 
+          item === existingItem 
             ? { ...item, quantity }
             : item
         );

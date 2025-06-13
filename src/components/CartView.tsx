@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
 
 const CartView = () => {
   const router = useRouter();
@@ -36,7 +37,14 @@ const CartView = () => {
   };
 
   const handleRemoveFromCart = async (cartItemId: string) => {
+    console.log('=== CARTVIEW REMOVE DEBUG ===');
     console.log('handleRemoveFromCart called with:', cartItemId);
+    console.log('Current cartItems in component:', cartItems.map(item => ({
+      id: item.id,
+      product_id: item.product_id,
+      productId: item.product.id,
+      name: item.product.name
+    })));
     
     setPendingActions(prev => ({ ...prev, [`remove_${cartItemId}`]: true }));
     
@@ -53,6 +61,12 @@ const CartView = () => {
 
   const handleUpdateQuantity = async (cartItemId: string, quantity: number) => {
     if (quantity < 0) return; // Prevent negative quantities
+    
+    // If quantity is 0, remove the item instead
+    if (quantity === 0) {
+      handleRemoveFromCart(cartItemId);
+      return;
+    }
     
     console.log('handleUpdateQuantity called with:', { cartItemId, quantity });
     
@@ -71,15 +85,31 @@ const CartView = () => {
   };
 
   const handleDecreaseQuantity = (cartItemId: string, currentQuantity: number) => {
-    const newQuantity = Math.max(0, currentQuantity - 1);
-    console.log('handleDecreaseQuantity:', { cartItemId, currentQuantity, newQuantity });
-    handleUpdateQuantity(cartItemId, newQuantity);
+    if (currentQuantity <= 1) {
+      // If quantity is 1 or less, remove the item instead of setting to 0
+      handleRemoveFromCart(cartItemId);
+    } else {
+      const newQuantity = currentQuantity - 1;
+      console.log('handleDecreaseQuantity:', { cartItemId, currentQuantity, newQuantity });
+      handleUpdateQuantity(cartItemId, newQuantity);
+    }
   };
 
   const handleIncreaseQuantity = (cartItemId: string, currentQuantity: number) => {
     const newQuantity = currentQuantity + 1;
     console.log('handleIncreaseQuantity:', { cartItemId, currentQuantity, newQuantity });
     handleUpdateQuantity(cartItemId, newQuantity);
+  };
+
+  const handleQuantityInputChange = (cartItemId: string, value: string) => {
+    const quantity = parseInt(value);
+    if (isNaN(quantity) || quantity < 0) return;
+    
+    if (quantity === 0) {
+      handleRemoveFromCart(cartItemId);
+    } else {
+      handleUpdateQuantity(cartItemId, quantity);
+    }
   };
 
   // Error state
@@ -222,7 +252,14 @@ const CartView = () => {
                                 >
                                   {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Minus className="h-3 w-3" />}
                                 </Button>
-                                <span className="w-12 text-center text-sm font-medium">{item.quantity}</span>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  value={item.quantity}
+                                  onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
+                                  className="w-12 h-8 text-center text-sm font-medium border-0 rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  disabled={isActionPending}
+                                />
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -251,7 +288,14 @@ const CartView = () => {
                               >
                                 {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Minus className="h-3 w-3" />}
                               </Button>
-                              <span className="w-12 text-center text-sm font-medium">{item.quantity}</span>
+                              <Input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
+                                className="w-12 h-8 text-center text-sm font-medium border-0 rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                disabled={isActionPending}
+                              />
                               <Button
                                 variant="ghost"
                                 size="sm"

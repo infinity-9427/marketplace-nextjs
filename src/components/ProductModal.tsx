@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Product } from "./ProductCard";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useAddToCart } from "@/stores/cartStore";
+import { useAddToCart, useCartQuery } from "@/stores/cartStore";
 
 interface ProductModalProps {
   product: Product | null;
@@ -22,6 +22,22 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   const addToCartMutation = useAddToCart();
+  const { data: cartItems = [] } = useCartQuery();
+
+  // Initialize quantity based on cart contents when modal opens
+  useEffect(() => {
+    if (isOpen && product) {
+      const existingCartItem = cartItems.find(
+        (item) => item.product_id === product.id
+      );
+      setQuantity(existingCartItem ? existingCartItem.quantity : 1);
+    }
+  }, [isOpen, product, cartItems]);
+
+  // Reset image error when product changes
+  useEffect(() => {
+    setImageError(false);
+  }, [product?.id]);
 
   if (!product) return null;
 
@@ -46,7 +62,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     : [];
 
   const defaultImage =
-    "/noImage.webp"
+    "/noImage.webp";
   const handleImageError = () => {
     setImageError(true);
   };
